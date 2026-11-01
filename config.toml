@@ -1,0 +1,76 @@
+title                  = "kk_Atakaの日記"
+language               = "jp"
+languageCode           = "jp"
+defaultContentLanguage = "jp"
+
+baseURL       = "https://note.gosyujin.com"
+contentDir    = "md"
+ignoreFiles   = ["\\var/$"]
+enableGitInfo = true
+
+googleAnalytics = "UA-34929069-1"
+
+footnoteAnchorPrefix       = "#"
+footnoteReturnLinkContents = "##"
+
+paginate              = 10
+paginatePath          ="page"
+preserveTaxonomyNames = true
+
+pygmentsUseClasses            = true
+pygmentsCodefences            = true
+pygmentsCodeFencesGuessSyntax = true
+# pygmentsOptions             = "linenos=inline"
+# $ hugo gen chromastyles --style monokai > syntax.css
+
+[blackfriday]
+fractions     = false
+taskLists     = true
+
+[taxonomies]
+  tag        = "tags"
+
+# 過去記事(Jekyllで生成してた)との整合性維持
+[permalinks]
+  posts = "/:year/:month/:day/:slug"
+
+[frontmatter]
+  date  = [":filename", ":default"]
+
+[[menu.main]]
+  identifier = "about"
+  name       = "About"
+  url        = "/about/"
+  weight     = 1
+[[menu.main]]
+  identifier = "archives"
+  name       = "Archives"
+  url        = "/"
+  weight     = 2
+[[menu.main]]
+  identifier = "tags"
+  name       = "Tags"
+  url        = "/tags/"
+  weight     = 3
+[[menu.main]]
+  identifier = "bookmark"
+  name       = "Bookmark"
+  url        = "/bookmark/"
+  weight     = 4
+
+[related]
+  threshold    = 80
+  includeNewer = true
+  toLower      = false
+[[related.indices]]
+  name         = "keywords"
+  weight       = 100
+[[related.indices]]
+  name         = "tags"
+  weight       = 90
+[[related.indices]]
+  name         = "date"
+  weight       = 60
+
+[params]
+  GithubCommitURL = "https://github.com/gosyujin/gosyujin.github.io/commit/"
