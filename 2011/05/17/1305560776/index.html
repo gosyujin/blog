@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+      
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-34929069-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+    
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+      
+  MicrosoftOutlookのメールをRubyで操作する！ - kk_Atakaの日記
+
+    </title>
+
+    
+      <meta name="description" property="og:description" content="[Ruby][Windows]MicrosoftOutlookのメールをRubyで操作する！ あらすじ  職場のメールはMicrosoftOutlook…添付ファイルとかメール本文を手動で保存するだけ …">
+    
+
+    <meta name="apple-mobile-web-app-title" content="kk_Atakaの日記">
+
+    <link rel="stylesheet" href="/css/primer-syntax.css">
+    <link rel="stylesheet" href="/css/primer-build.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+  </head>
+
+  <body class="bg-gray">
+    <div id="holy" class="container-lg bg-white h-100">
+
+      <div id="header" class="px-1 bg-white">
+        <nav class="UnderlineNav UnderlineNav--right px-2">
+  <a class="UnderlineNav-actions muted-link" href="https://note.gosyujin.com">
+    kk_Atakaの日記
+  </a>
+
+  
+    
+
+    <div class="UnderlineNav-body">
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/about/">
+            
+            <span>About</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/">
+            
+            <span>Archives</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/tags/">
+            
+            <span>Tags</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/bookmark/">
+            
+            <span>Bookmark</span>
+          </a>
+        
+      
+    </div>
+  
+</nav>
+
+      </div>
+
+      <div role="main" id="main" class="holy-main markdown-body px-4 bg-white">
+        
+  
+  
+    <div>
+      <h1>MicrosoftOutlookのメールをRubyで操作する！</h1>
+      <div class="Subhead-description">
+        
+        
+        <div>
+  <ul>
+    <li>
+      Tags:
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+    </li>
+    <li>
+      初版発行:
+      2011/05/17
+    </li>
+    <li>
+      最終更新:
+      
+        2019/04/15
+        <a href="https://github.com/gosyujin/gosyujin.github.io/commit/c1fe96dc0147a12ff32c768e07ff29c53fe6586c">ジェネレータをhugoに変更</a>
+      
+    </li>
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#ruby-windows-microsoftoutlookのメールをrubyで操作する">[Ruby][Windows]MicrosoftOutlookのメールをRubyで操作する！</a></li>
+<li><a href="#あらすじ">あらすじ</a></li>
+<li><a href="#参考サイト">参考サイト</a></li>
+<li><a href="#やりたい事">やりたい事</a></li>
+<li><a href="#手順">手順</a></li>
+<li><a href="#まとめ">まとめ</a></li>
+<li><a href="#todo">TODO</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+    <article>
+     <section class="pb-6 mb-3 border-bottom">
+        
+
+<h2 id="ruby-windows-microsoftoutlookのメールをrubyで操作する">[Ruby][Windows]MicrosoftOutlookのメールをRubyで操作する！</h2>
+
+<h2 id="あらすじ">あらすじ</h2>
+
+<ol>
+<li>職場のメールはMicrosoftOutlook…添付ファイルとかメール本文を手動で保存するだけの簡単なお仕事がめんどいのでマクロを作った</li>
+<li>ある日、なんか共通マクロを適用してくださいねとか通達がきたので適用した(今まで使っていた自分のマクロは退避した)</li>
+<li>新マクロにはご丁寧にパスワードがかけられていた…編集不可／(^o^)＼</li>
+<li>Outlookからマクロを実行するのは諦めて外部からメールを操作しよう…[1]</li>
+<li>Rubyでできないかな？　…win32oleというものがあるらしい！←今ここ</li>
+</ol>
+
+<h2 id="参考サイト">参考サイト</h2>
+
+<ul>
+<li><a href="http://jp.rubyist.net/magazine/?0007-Win32OLE:title">http://jp.rubyist.net/magazine/?0007-Win32OLE:title</a></li>
+</ul>
+
+<p>ドンピシャでした。</p>
+
+<h2 id="やりたい事">やりたい事</h2>
+
+<ul>
+<li>メール本文を保存したい(ファイル名は件名.txt)</li>
+<li>添付ファイルを保存したい(ファイル名は添付ファイル名のまま)</li>
+<li>上記のファイルをYYYYMMDD_添付ファイル名(拡張子なし)フォルダの中へ格納</li>
+<li>保存場所はマイドキュメントかデスクトップ</li>
+</ul>
+
+<p>こんな感じ</p>
+<div class="highlight"><pre class="chroma">[メール]
+件名:subsubject
+添付ファイル:tmptmpfile.zip
+
+↓ダウンロード
+
+[マイドキュメント]
+└[YYYYMMDD_tmptmpfile]
+　├tmptmpfile.zip
+　└subsubject.txt</pre></div>
+<h2 id="手順">手順</h2>
+
+<p>まずソースはこんな感じ。GitHubは [<a href="https://github.com/gosyujin/outlook_for_ruby:title">https://github.com/gosyujin/outlook_for_ruby:title</a>]</p>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="c1"># -*- encoding: UTF-8 -*-</span>
+<span class="nb">require</span> <span class="s2">&#34;win32ole&#34;</span>
+
+<span class="c1"># 保存ディレクトリ基準。一応マイドキュメントへ</span>
+<span class="no">SaveRootPath</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="no">ENV</span><span class="o">[</span><span class="s2">&#34;USERPROFILE&#34;</span><span class="o">]</span><span class="si">}</span><span class="se">\\</span><span class="s2">My Documents&#34;</span>
+
+<span class="k">class</span> <span class="nc">Outlook</span>
+    <span class="k">def</span> <span class="nf">initialize</span>
+        <span class="c1"># Outlookに接続</span>
+        <span class="n">ol</span> <span class="o">=</span> <span class="no">WIN32OLE</span><span class="o">::</span><span class="n">connect</span><span class="p">(</span><span class="s2">&#34;Outlook.Application&#34;</span><span class="p">)</span>
+        <span class="c1"># NameSpace取得(getNameSpaceの引数は&#34;MAPI&#34;のみ)</span>
+        <span class="vi">@nameSpace</span> <span class="o">=</span> <span class="n">ol</span><span class="o">.</span><span class="n">getNameSpace</span><span class="p">(</span><span class="s2">&#34;MAPI&#34;</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="c1"># EntryIDを元にメールを取得  </span>
+    <span class="k">def</span> <span class="nf">mail</span><span class="p">(</span><span class="n">entryId</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="vi">@nameSpace</span><span class="o">.</span><span class="n">GetItemFromID</span><span class="p">(</span><span class="n">entryId</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">item</span>
+    <span class="k">end</span>
+    
+    <span class="c1"># メールの一覧を取得</span>
+    <span class="k">def</span> <span class="nf">mails</span>
+        <span class="c1"># GetDefaultFolder(6)は受信トレイ</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="vi">@nameSpace</span><span class="o">.</span><span class="n">GetDefaultFolder</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="n">folder</span><span class="o">.</span><span class="n">Items</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">mail</span><span class="o">|</span>
+            <span class="no">GC</span><span class="o">.</span><span class="n">start</span>
+            <span class="k">yield</span> <span class="n">mail</span>
+        <span class="k">end</span>
+    <span class="k">end</span> 
+<span class="k">end</span>
+
+<span class="n">outlook</span> <span class="o">=</span> <span class="no">Outlook</span><span class="o">.</span><span class="n">new</span>
+<span class="c1"># メールのタイトル、送信日時、EntryID一欄を表示</span>
+<span class="n">outlook</span><span class="o">.</span><span class="n">mails</span> <span class="k">do</span> <span class="o">|</span><span class="n">mail</span><span class="o">|</span>
+    <span class="c1">#puts &#34;To     :#{mail.To}&#34;</span>
+    <span class="nb">puts</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">SentOn</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">Subject</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&#34;a50&#34;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
+    <span class="nb">puts</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">EntryID</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="k">end</span>
+
+<span class="c1"># 入力待ち。保存したいメールのEntryIdを貼りつけ</span>
+<span class="n">mail</span> <span class="o">=</span> <span class="n">outlook</span><span class="o">.</span><span class="n">mail</span><span class="p">(</span><span class="no">STDIN</span><span class="o">.</span><span class="n">gets</span><span class="o">.</span><span class="n">chomp</span><span class="p">)</span>
+<span class="c1">#puts mail.Attachments.ole_methods</span>
+<span class="c1">#puts mail.Attachments.Item(1).ole_methods</span>
+
+<span class="c1"># 添付ファイルのファイル名を取得</span>
+<span class="n">file</span> <span class="o">=</span> <span class="n">mail</span><span class="o">.</span><span class="n">Attachments</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">FileName</span>
+<span class="c1"># RootPath下に添付ファイル名のディレクトリ作成</span>
+<span class="no">SaveDir</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="no">SaveRootPath</span><span class="si">}</span><span class="se">\\</span><span class="si">#{</span><span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;.&#34;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="no">SaveDir</span><span class="p">)</span>
+
+<span class="c1"># 添付ファイル保存</span>
+<span class="n">mail</span><span class="o">.</span><span class="n">Attachments</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">SaveAsFile</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">#{</span><span class="no">SaveDir</span><span class="si">}</span><span class="se">\\</span><span class="si">#{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+
+<span class="c1"># ディレクトリ下にタイトル.txtファイルを作成し送信者、タイトル、本文を書きこむ</span>
+<span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">#{</span><span class="no">SaveDir</span><span class="si">}</span><span class="se">\\</span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">Subject</span><span class="si">}</span><span class="s2">.txt&#34;</span><span class="p">,</span> <span class="s2">&#34;w&#34;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;SENDER      : </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">SenderName</span><span class="si">}</span><span class="s2">(</span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">SenderEmailAddress</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;TO          : </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">To</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;CC          : </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">CC</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;ReceivedTime: </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">SentOn</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;SUBJECT     : </span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">Subject</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="n">file</span><span class="o">.</span><span class="n">write</span> <span class="s2">&#34;BODY: </span><span class="se">\n</span><span class="si">#{</span><span class="n">mail</span><span class="o">.</span><span class="n">Body</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+<span class="k">end</span></code></pre></div>
+<p>基本的に参考サイトの「Ruby から Outlook を操作する」の章の通りに進めば、まず受信トレイの一覧を取ってこれるまではいけます。詰まったのは添付ファイルの扱い…Attachmentsオブジェクトの扱い方でした。</p>
+
+<ul>
+<li>まず、自作のOutlook#mailを呼び出し特定のメールを取得します。(EntryIDを元に)</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby">    <span class="c1"># EntryIDを元にメールを取得  </span>
+    <span class="k">def</span> <span class="nf">mail</span><span class="p">(</span><span class="n">entryId</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="vi">@nameSpace</span><span class="o">.</span><span class="n">GetItemFromID</span><span class="p">(</span><span class="n">entryId</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">item</span>
+    <span class="k">end</span></code></pre></div>
+<ul>
+<li>このメールオブジェクトにAttachmentsが。そしてAttachments.Item(number)に添付ファイルが格納されているようです。Itemのnumberは1から始まっている？　0だとエラーが出たような…。</li>
+<li>Item(number)#FileNameで添付ファイル名が、Item(number)#SaveAsFile(path)で添付ファイルの保存ができました。この辺り。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="n">file</span> <span class="o">=</span> <span class="n">mail</span><span class="o">.</span><span class="n">Attachments</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">FileName</span>
+<span class="c1"># RootPath下に添付ファイル名のディレクトリ作成</span>
+<span class="no">SaveDir</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="no">SaveRootPath</span><span class="si">}</span><span class="se">\\</span><span class="si">#{</span><span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;.&#34;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&#34;</span>
+<span class="no">Dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="no">SaveDir</span><span class="p">)</span>
+
+<span class="c1"># 添付ファイル保存</span>
+<span class="n">mail</span><span class="o">.</span><span class="n">Attachments</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">SaveAsFile</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">#{</span><span class="no">SaveDir</span><span class="si">}</span><span class="se">\\</span><span class="si">#{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span></code></pre></div>
+<h2 id="まとめ">まとめ</h2>
+
+<ul>
+<li>メール本文を保存したい(ファイル名は件名.txt)
+
+<ul>
+<li>とりあえずできた</li>
+</ul></li>
+<li>添付ファイルを保存したい(ファイル名は添付ファイル名のまま)
+
+<ul>
+<li>とりあえずできた</li>
+</ul></li>
+<li>上記のファイルをYYYYMMDD_添付ファイル名(拡張子なし)フォルダの中へ格納
+
+<ul>
+<li>YYYYMMDD付加はまだ、フォルダはできた</li>
+</ul></li>
+<li>保存場所はマイドキュメントかデスクトップ
+
+<ul>
+<li>マイドキュメントに保存はできた</li>
+</ul></li>
+</ul>
+
+<h2 id="todo">TODO</h2>
+
+<ul>
+<li>フォルダ名先頭にYYYYMMDD</li>
+<li>フォルダ名に使用できない文字を全角に置換</li>
+<li>フォルダ存在時の対処</li>
+<li>デスクトップに保存したい</li>
+</ul>
+
+<p>穴だらけだしまだわからない事も多いけど、とりあえず動く所までは行けた！　ので続く。</p>
+
+<p>[1] もしかしたらググッたら打開策があるのかもしれない。</p>
+
+      </section>
+    </article>
+
+    <div class="Subhead-description">
+      
+      <nav class="paginate-container">
+  <div class="pagination">
+      
+        <a href="https://note.gosyujin.com/2011/05/01/1304204171/" class="pagination_overflow previous_page">
+          Prev: 
+          11/5/1
+          Redmineインストール備忘録(Windows)
+        </a>
+      
+
+      <a href="https://note.gosyujin.com" class="pagination_center">
+        Archives
+      </a>
+      </span>
+
+      
+        <a href="https://note.gosyujin.com/2011/06/26/1309044393/" class="pagination_overflow next_page">
+          Next: 
+          11/6/26
+          PythonでCOBOLファイルの行頭に連番をふる
+        </a>
+      
+  </div>
+</nav>
+
+      
+
+
+
+<h2>関連記事(この記事の初版より古い記事はリンクがグレーで表示されます)</h2>
+<ol>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/09/30 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/java' class="muted-link">
+      [<span class="Label Label--gray">Java</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/09/30/1317312438/">.msgファイルをパースして中から添付ファイルを抜き出す</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/09/07 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/redmine' class="muted-link">
+      [<span class="Label Label--gray">Redmine</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/sqlite3' class="muted-link">
+      [<span class="Label Label--gray">SQLite3</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/09/07/1315401886/">Redmineのプラグイン作成のための備忘録と、時々SQLite3</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/08/23 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/08/23/1314103220/">MicrosoftOutlookで消せなくなったフォルダをwin32ole経由でRubyから消してみる</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/07/09 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/07/09/1310140318/">MicrosoftOutlookのメールをRuby(win32ole)で操作する！ その2</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/05/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/redmine' class="muted-link">
+      [<span class="Label Label--gray">Redmine</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/05/01/1304204171/">Redmineインストール備忘録(Windows)</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/10/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/bundle' class="muted-link">
+      [<span class="Label Label--gray">Bundle</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/10/01/bundle-exec-bat/">bundle execを省略したいのでバッチを作った(Windows版)</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/07/17 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/redmine' class="muted-link">
+      [<span class="Label Label--gray">Redmine</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/07/17/1342535044/">Windows版Redmineをサービスに登録してブート時に起動させる(宿題あり)</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/04/20 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/04/20/1334933158/">ZenTestで実行したRSpecの結果をGrowlで通知してくれるようにした</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/03/27 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/jenkins' class="muted-link">
+      [<span class="Label Label--gray">Jenkins</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/03/27/1332856400/">simplecovとsimplecov-rcovを使ってJenkinsでカバレッジを確認</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/03/20 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/jenkins' class="muted-link">
+      [<span class="Label Label--gray">Jenkins</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/03/20/1332240122/">Windows環境用にrcovをビルドしなおす手順</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/02/29 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/rails' class="muted-link">
+      [<span class="Label Label--gray">Rails</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/02/29/1330528564/">Rails3レシピブックを読みながらRailsを学ぶ モデル、コントローラ、ビュー、Railsの規約など</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/02/28 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/rails' class="muted-link">
+      [<span class="Label Label--gray">Rails</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/02/28/1330436604/">Rails3レシピブックを読みながらRailsを学ぶ</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/02/20 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/02/20/1329744294/">Rubyの実行ファイルを作成するExerbとOcraを試してみた</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/27 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/evernote' class="muted-link">
+      [<span class="Label Label--gray">Evernote</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/27/1324911671/">EvernoteのAPIをRubyから叩きたい</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/26 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/haml' class="muted-link">
+      [<span class="Label Label--gray">Haml</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/sinatra' class="muted-link">
+      [<span class="Label Label--gray">Sinatra</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/26/1324910284/">SinatraでHaml入門</a>
+    </li>
+  
+</ol>
+
+
+    </div>
+
+  
+
+      </div>
+
+      <div id="side" class="bg-white">
+        <div>
+          
+  <div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <h3>Link</h3>
+  <ul>
+    <li>
+      <a href="https://github.com/gosyujin">GitHub</a>
+    </li>
+    <li>
+      <a href="http://www.slideshare.net/kk_Ataka">Slideshare</a>
+    </li>
+    <li>
+      <a href="http://connpass.com/user/kk_Ataka/">Connpass</a>
+    </li>
+ </ul>
+</div>
+
+
+
+
+
+  <div id="recent" class="Box Box-blue p-2 mb-3 mt-5">
+    <a href="https://note.gosyujin.com"><h3>Recent Entry</h3></a>
+    <ul>
+      
+        <li>
+          <span>19/8/29 </span>
+          
+          <a class="mb-2" href="/2019/08/29/eclipse-deployment-assembly/">Eclipseの動的Webプロジェクトから別プロジェクト(自作ライブラリ)を参照する</a>
+        </li>
+      
+        <li>
+          <span>19/7/9 </span>
+          
+          <a class="mb-2" href="/2019/07/09/android-studio-code-format/">Android Studioのコードフォーマットをプロジェクトで統一する</a>
+        </li>
+      
+        <li>
+          <span>19/7/2 </span>
+          
+          <a class="mb-2" href="/2019/07/02/jsp-js-mix/">JSPのスクリプトレットとjavascriptで同じ変数を使ってハマった話</a>
+        </li>
+      
+        <li>
+          <span>19/6/20 </span>
+          
+          <a class="mb-2" href="/2019/06/20/stty-ixon/">Ctrl&#43;Sで画面停止する機能を無効化する</a>
+        </li>
+      
+        <li>
+          <span>19/6/13 </span>
+          
+          <a class="mb-2" href="/2019/06/13/sqlserver-varchar-nvarchar/">SQL Serverでnvarchar(x)のカラムにx文字入らないのはなぜ</a>
+        </li>
+      
+        <li>
+          <span>19/6/3 </span>
+          
+          <a class="mb-2" href="/2019/06/03/sqlserver-show-columns-logical-name/">SQL Serverのカラムに設定されている論理名をまとめて取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/21 </span>
+          
+          <a class="mb-2" href="/2019/05/21/sqlserver-query-parameter/">SQL Serverの動的管理ビューから、実行したSQL(とバインド変数)を取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/2 </span>
+          
+          <a class="mb-2" href="/2019/05/02/sqlserver-convert-implicit/">SQL Serverで実行したSQLが暗黙の型変換が起こっているかどうかはどうやって調べたらよいのか</a>
+        </li>
+      
+        <li>
+          <span>19/4/23 </span>
+          
+          <a class="mb-2" href="/2019/04/23/database-alter-table/">色々なDBのバージョン確認方法とか論理名のつけ方とか</a>
+        </li>
+      
+        <li>
+          <span>19/4/15 </span>
+          
+          <a class="mb-2" href="/2019/04/15/sqlserver-collation-name/">SQL Serverでの照合順序の確認方法</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+  <div id="tags" class="Box Box--blue p-2 mb-3 mt-5">
+    <a href="/tags/"><h3>Tags</h3></a>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/a5-sql-mk-2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">A5 SQL Mk-2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/api" class="link-gray text-emphasized css-truncate-target">
+          <span class="">API</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/agile" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Agile</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/android" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Android</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ansible" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ansible</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/application" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Application</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/bundle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Bundle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/chef" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Chef</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/db2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">DB2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/dropbox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Dropbox</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/eclipse" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Eclipse</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/evernote" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Evernote</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/firefox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Firefox</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/fluentd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Fluentd</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/git" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Git</span>
+        </a>
+        <span class="text-right Counter">16</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/github" class="link-gray text-emphasized css-truncate-target">
+          <span class="">GitHub</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gmail" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gmail</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/golang" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Golang</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gradle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gradle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haml" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haml</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haskell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haskell</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/heroku" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Heroku</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/homebrew" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Homebrew</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hubot" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hubot</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hugo" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hugo</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ie" class="link-gray text-emphasized css-truncate-target">
+          <span class="">IE</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jsp" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JSP</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Java</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/javascript" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JavaScript</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jekyll" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jekyll</span>
+        </a>
+        <span class="text-right Counter">20</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jenkins" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jenkins</span>
+        </a>
+        <span class="text-right Counter">7</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/liquid" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Liquid</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/lokka" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Lokka</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mac" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Mac</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/markdown" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Markdown</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mysql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">MySql</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oauth" class="link-gray text-emphasized css-truncate-target">
+          <span class="">OAuth</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oracle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Oracle</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/postgresql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">PostgreSQL</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/python" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Python</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rspec" class="link-gray text-emphasized css-truncate-target">
+          <span class="">RSpec</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rails" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Rails</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/redmine" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Redmine</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ruby" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ruby</span>
+        </a>
+        <span class="text-right Counter">75</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql-server" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL Server</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sqlite3" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQLite3</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/scala" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Scala</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/selenium" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Selenium</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/shell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Shell</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sinatra" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sinatra</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/slideshare" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SlideShare</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/solaris" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Solaris</span>
+        </a>
+        <span class="text-right Counter">12</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sphinx" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sphinx</span>
+        </a>
+        <span class="text-right Counter">18</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/startup" class="link-gray text-emphasized css-truncate-target">
+          <span class="">StartUp</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/subversion" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Subversion</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/tdd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">TDD</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/test" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Test</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/translate" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Translate</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/twitter" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Twitter</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/unix" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Unix</span>
+        </a>
+        <span class="text-right Counter">14</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vb" class="link-gray text-emphasized css-truncate-target">
+          <span class="">VB</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vim" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Vim</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wicket" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wicket</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wiki" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wiki</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/windows" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Windows</span>
+        </a>
+        <span class="text-right Counter">25</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ios" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iOS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/iphone" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iPhone</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java-ja" class="link-gray text-emphasized css-truncate-target">
+          <span class="">java-ja</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/node.js" class="link-gray text-emphasized css-truncate-target">
+          <span class="">node.js</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rest" class="link-gray text-emphasized css-truncate-target">
+          <span class="">reST</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/xquery" class="link-gray text-emphasized css-truncate-target">
+          <span class="">xQuery</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%81%95%e3%81%8f%e3%82%89vps" class="link-gray text-emphasized css-truncate-target">
+          <span class="">さくらVPS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%82%a4%e3%83%99%e3%83%b3%e3%83%88" class="link-gray text-emphasized css-truncate-target">
+          <span class="">イベント</span>
+        </a>
+        <span class="text-right Counter">27</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%83%8d%e3%82%bf" class="link-gray text-emphasized css-truncate-target">
+          <span class="">ネタ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%96%87%e5%ad%97%e3%82%b3%e3%83%bc%e3%83%89" class="link-gray text-emphasized css-truncate-target">
+          <span class="">文字コード</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%97%a5%e8%a8%98" class="link-gray text-emphasized css-truncate-target">
+          <span class="">日記</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e8%aa%bf%e6%9f%bb%e3%83%ad%e3%82%b0" class="link-gray text-emphasized css-truncate-target">
+          <span class="">調査ログ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+  </div>
+
+
+<div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <a href="https://pixe.la/" target="_blank"><h3>PageView@Pixela</h3></a>
+  <div id="svg-load-area"></div>
+</div>
+
+
+
+        </div>
+        <aside>
+          
+  
+  
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#ruby-windows-microsoftoutlookのメールをrubyで操作する">[Ruby][Windows]MicrosoftOutlookのメールをRubyで操作する！</a></li>
+<li><a href="#あらすじ">あらすじ</a></li>
+<li><a href="#参考サイト">参考サイト</a></li>
+<li><a href="#やりたい事">やりたい事</a></li>
+<li><a href="#手順">手順</a></li>
+<li><a href="#まとめ">まとめ</a></li>
+<li><a href="#todo">TODO</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+
+
+        </aside>
+      </div>
+
+      <div id="footer" class="pt-2 pb-3 bg-white text-center">
+        <span class="text-small text-gray">
+  Powered by
+  <a href="https://gohugo.io" class="link-gray-dark">Hugo</a>
+  
+  
+  0.40.1 2018-04-25T17:16:11Z theme based on
+  <a href="https://github.com/qqhann/hugo-primer" class="link-gray-dark">Hugo-Primer</a>
+  &#x00A9; 2009-2019 <a href="https://gosyujin.com" class="link-gray-dark">kk_Ataka</a>
+</span>
+
+      </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        $('#svg-load-area').load('https://pixe.la/v1/users/gosyujin/graphs/page-view?mode=short', function(){
+           tippy('.each-day', {
+             arrow: true
+           });
+        });
+      });
+    </script>
+
+    
+    
+    
+    
+  </body>
+</html>

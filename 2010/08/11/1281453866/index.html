@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+      
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-34929069-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+    
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+      
+  JVM勉強会に行ってきました - kk_Atakaの日記
+
+    </title>
+
+    
+      <meta name="description" property="og:description" content="[Java][イベント]JVM勉強会に行ってきました ふむ、jojo勉強会以来…？　あれ、java-ja温泉の事って書いてなかったっけか。書いてなかったのか……。
+というわけで行ってまいりましたJVM …">
+    
+
+    <meta name="apple-mobile-web-app-title" content="kk_Atakaの日記">
+
+    <link rel="stylesheet" href="/css/primer-syntax.css">
+    <link rel="stylesheet" href="/css/primer-build.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+  </head>
+
+  <body class="bg-gray">
+    <div id="holy" class="container-lg bg-white h-100">
+
+      <div id="header" class="px-1 bg-white">
+        <nav class="UnderlineNav UnderlineNav--right px-2">
+  <a class="UnderlineNav-actions muted-link" href="https://note.gosyujin.com">
+    kk_Atakaの日記
+  </a>
+
+  
+    
+
+    <div class="UnderlineNav-body">
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/about/">
+            
+            <span>About</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/">
+            
+            <span>Archives</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/tags/">
+            
+            <span>Tags</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/bookmark/">
+            
+            <span>Bookmark</span>
+          </a>
+        
+      
+    </div>
+  
+</nav>
+
+      </div>
+
+      <div role="main" id="main" class="holy-main markdown-body px-4 bg-white">
+        
+  
+  
+    <div>
+      <h1>JVM勉強会に行ってきました</h1>
+      <div class="Subhead-description">
+        
+        
+        <div>
+  <ul>
+    <li>
+      Tags:
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/java' class="muted-link">
+      [<span class="Label Label--gray">Java</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+    </li>
+    <li>
+      初版発行:
+      2010/08/11
+    </li>
+    <li>
+      最終更新:
+      
+        2019/04/15
+        <a href="https://github.com/gosyujin/gosyujin.github.io/commit/c1fe96dc0147a12ff32c768e07ff29c53fe6586c">ジェネレータをhugoに変更</a>
+      
+    </li>
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#java-イベント-jvm勉強会に行ってきました">[Java][イベント]JVM勉強会に行ってきました</a></li>
+<li><a href="#参考資料">参考資料</a></li>
+<li><a href="#本編">本編</a></li>
+<li><a href="#最後の最後に">最後の最後に</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+    <article>
+     <section class="pb-6 mb-3 border-bottom">
+        
+
+<h2 id="java-イベント-jvm勉強会に行ってきました">[Java][イベント]JVM勉強会に行ってきました</h2>
+
+<p>ふむ、jojo勉強会以来…？　あれ、java-ja温泉の事って書いてなかったっけか。書いてなかったのか……。</p>
+
+<p>というわけで行ってまいりましたJVM勉強会。</p>
+
+<p>VMの中の人まで意識した設計をしたことがなく、ClassLoaderをサンプルでちょこちょこって動かした程度のレベルですが。</p>
+
+<h2 id="参考資料">参考資料</h2>
+
+<p>とりあえず、会場で持ってる人が割といた、もしくは発表内で話題にあがった本など。</p>
+
+<ul>
+<li>Java仮想マシン仕様</li>
+<li>ガベージコレクションのアルゴリズムと実装</li>
+<li>デコンパイリングJava</li>
+</ul>
+
+<p>この辺りを読んでくると、より内容を楽しめた模様。</p>
+
+<h2 id="本編">本編</h2>
+
+<ul>
+<li>@ashigeruさん クラスローダについて
+
+<ul>
+<li>クラスローダはfindClass()をオーバライドする</li>
+<li>loadClass()を実行すると委譲先クラスを探しにいく。親から見ていって、なかったら自分でロード
+
+<ul>
+<li>親から見ていくので、親が古いライブラリを持っているとそれをロードしてしまう！</li>
+</ul></li>
+<li>某アプリケーションサーバは親を最後に検索する = PARENT_LAST
+
+<ul>
+<li>その名のとおり自分のクラスローダを最初に検索するので、親のライブラリの影響を受けにくい</li>
+</ul></li>
+<li>同じ名前のクラスでも定義ローダーが違えば別のもの。Class.getClassLoader()でどこから呼ばれたか確認できる。</li>
+<li>PARENT_LASTの問題点としてドッペルゲンガーという現象。などなど……</li>
+</ul></li>
+</ul>
+
+<!-- -->
+
+<ul>
+<li>@skrbさん Stack on JavaVM
+
+<ul>
+<li>JVMとスタックについて</li>
+<li>スタックを使用した逆ポーランド法のアニメーション（わかりやすい！）</li>
+<li>JVMはスタック</li>
+<li>スタックはThreadひとつにつきひとつ
+
+<ul>
+<li>中にはプログラムカウンタがひとつ</li>
+<li>フレームの中にはローカル変数とオペランドスタック</li>
+</ul></li>
+<li>JVMの中ではBooleanはIntとして扱われている</li>
+<li>インスタンスはヒープにアロケーションされる</li>
+<li>スタックは二段構え（JavaStackとオペランドスタック）</li>
+</ul></li>
+</ul>
+
+<!-- -->
+
+<ul>
+<li>@kmizuさん わかる！Javaバイトコード－30分でわからない？Javaバイトコード入門
+
+<ul>
+<li>Hello Worldの逆アセンブル</li>
+<li>byte,short,char,boolean -&gt; すべてintとして扱われる</li>
+<li>ロード/ストア命令…定数をオペランドスタックにロードする命令</li>
+<li>ロード/ストア命令2…ローカル変数の値をオペランドスタックにロードする命令</li>
+<li>型変換命令…キャストなどint -&gt;longなど</li>
+<li>配列関係の命令</li>
+<li>オブジェクトの生成・操作命令</li>
+<li>モニタ命令</li>
+<li>クラスファイルベリファイア
+
+<ul>
+<li>classファイルのフォーマットがJava仮想マシン仕様に従っているかどうかを該当クラスの初期化より前にチェックする。未初期化ローカル変数へのアクセス、型エラー、jasmin……この辺よくわかりませんした＞＜</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<!-- -->
+
+<ul>
+<li>@cactusmanさん GCについて
+
+<ul>
+<li>GC
+
+<ul>
+<li>ルートを起点として参照できるオブジェクトは生きている</li>
+<li>ルートに到達できないものがGCされる</li>
+</ul></li>
+<li>GCを学ぶ意義としてメモリ領域の効率的な使い方を意識できる</li>
+<li>マーク＆スイープ
+
+<ul>
+<li>ルートオブジェクトからたどれるオブジェクトをマークしていく</li>
+<li>マークのないオブジェクトを回収</li>
+<li>メリット：実装は簡単</li>
+<li>デメリット：フラグメンテーション、アロケーション速度、停止時間が長い→マークしている期間</li>
+</ul></li>
+<li>参照カウント
+
+<ul>
+<li>自信のオブジェクトが参照されているオブジェクトをカウント</li>
+<li>0になった時点でGC</li>
+<li>メリット：参照が停止されたタイミングで開放、停止時間が短い、参照をたどる必要がない</li>
+<li>デメリット：循環参照を回収できない、カウンターの値の増減処理が重い、実装が難しい</li>
+</ul></li>
+<li>コピー
+
+<ul>
+<li>メリット：スループットがいい、メモリ回収と同時にコンパクションを行える(フラグメンテーションが起きない)</li>
+<li>デメリット：ヒープ領域を余分に取る</li>
+</ul></li>
+<li>GCの種類 ScavengeGC - コピーGC</li>
+</ul></li>
+</ul>
+
+<!-- -->
+
+<ul>
+<li>@nekopさん クラスローダリークパターン なにそれおいしいの？
+
+<ul>
+<li>ThreadLocalで設定した値はThreadから強参照される</li>
+<li>java.util.loggingのLevelを継承でリーク</li>
+<li>既製ライブラリ　commons-logging</li>
+</ul></li>
+</ul>
+
+<!-- -->
+
+<ul>
+<li>日本オラクルたてのさん なれる！CL 5分間で分かる？ (OC4J)クラスローダ入門
+
+<ul>
+<li>OC4Jのおはなし。</li>
+<li>人間クラスローダ養成講座 &lt;- なにこれすごい受けたい！</li>
+<li>クラスローダは親子モデル、親からロードし子は最後。</li>
+<li>基本は1JavaVM1アプリ1ライフサイクルなのだが、現在は多くのアプリ・多くのライブラリが乗っているので、依存やバージョン競合が起こりそう。</li>
+<li>親子関係では足りなくなるのでloadClassの上書きという修羅の道を通った人もいる。</li>
+<li>ポリシーを組み合わせる -&gt; テンプレートで設定。</li>
+<li>OC4JはWebLogicServerへ…そして伝説へ…</li>
+</ul></li>
+</ul>
+
+<p>GCの仕組みなど普段は中の人にやってもらっていたところが、どんな仕組みになっていたのかなんとなくイメージできたかな…。</p>
+
+<p>@skrbさんの逆ポーランド方を図示したスライドは超わかりやすかった！　逆ポーランドとスタックは絡めて説明すると感覚的にすごく頭に入ってきやすいと思いました。</p>
+
+<p>最後に、主催者の@yuroyoroさん、二次会を取りまとめてくださった@yamashiroさん、会場を提供してくださった日本Oracle社さんに感謝。</p>
+
+<h2 id="最後の最後に">最後の最後に</h2>
+
+<p>Hello Worldをjavapしてみましょう。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloClassLoader</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;HelloWorld !!&#34;</span><span class="o">);</span>
+        <span class="o">}</span>
+<span class="o">}</span></code></pre></div><div class="highlight"><pre class="chroma">MacBook:java kk_Ataka$ javap -c HelloClassLoader
+Compiled from &#34;HelloClassLoader.java&#34;
+public class HelloClassLoader extends java.lang.Object{
+public HelloClassLoader();
+  Code:
+   0:   aload_0
+   1:   invokespecial   #1; //Method java/lang/Object.&#34;&lt;init&gt;&#34;:()V
+   4:   return
+
+public static void main(java.lang.String[]);
+  Code:
+   0:   getstatic   #2; //Field java/lang/System.out:Ljava/io/PrintStream;
+   3:   ldc #3; //String HelloWorld !!
+   5:   invokevirtual   #4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V
+   8:   return
+
+}</pre></div>
+      </section>
+    </article>
+
+    <div class="Subhead-description">
+      
+      <nav class="paginate-container">
+  <div class="pagination">
+      
+        <a href="https://note.gosyujin.com/2010/01/23/1264179525/" class="pagination_overflow previous_page">
+          Prev: 
+          10/1/23
+          java-ja勉強会に参加しました
+        </a>
+      
+
+      <a href="https://note.gosyujin.com" class="pagination_center">
+        Archives
+      </a>
+      </span>
+
+      
+        <a href="https://note.gosyujin.com/2010/11/13/1289639385/" class="pagination_overflow next_page">
+          Next: 
+          10/11/13
+          Hudson勉強会に行ってきました
+        </a>
+      
+  </div>
+</nav>
+
+      
+
+
+
+<h2>関連記事(この記事の初版より古い記事はリンクがグレーで表示されます)</h2>
+<ol>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/01/12 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/java' class="muted-link">
+      [<span class="Label Label--gray">Java</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/wicket' class="muted-link">
+      [<span class="Label Label--gray">Wicket</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/01/12/1294833920/">Wicket勉強会に参加しました</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2010/12/21 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/12/21/1292940870/">pixiv Tech Meetingに行ってきました</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2010/12/11 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/java-ja' class="muted-link">
+      [<span class="Label Label--gray">java-ja</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/12/11/1292077752/">java-ja忘年会に参加しました2010</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2010/11/13 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/11/13/1289639385/">Hudson勉強会に行ってきました</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/01/23 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/java-ja' class="muted-link">
+      [<span class="Label Label--gray">java-ja</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/01/23/1264179525/">java-ja勉強会に参加しました</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2016/11/30 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/python' class="muted-link">
+      [<span class="Label Label--gray">Python</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2016/11/30/pyconjp-sphinx-handson-kpt/">PyConJP 2016 in TokyoでSphinxハンズオンのTAをしてきた #pyconjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2016/01/19 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2016/01/19/pyladiestokyo-08-sphinx-handson-kpt/">PyLadiesTokyo #8でSphinxハンズオンのTAをしてきた #sphinxjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2015/12/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2015/12/01/sphinxconjp-2015-kpt/">SphinxCon JP 2015 で雑用してきた #sphinxjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2015/11/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2015/11/01/sphinx-workshop-kansai-kpt/">Sphinxワークショップ@関西で事例紹介とハンズオンTAをしてきた #sphinxjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2015/10/13 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/python' class="muted-link">
+      [<span class="Label Label--gray">Python</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2015/10/13/pyconjp-sphinx-handson-kpt/">PyConJP 2015 in TokyoでSphinxハンズオンのTAをしてきた #pyconjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2015/09/24 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ansible' class="muted-link">
+      [<span class="Label Label--gray">Ansible</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2015/09/24/ansible-meetup-201509/">Ansible Meetup in Tokyo 2015.09でLTしてきました #ansiblejp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2014/10/27 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2014/10/27/sphinxconjp-2014/">SphinxCon JP 2014 で発表してきました #sphinxjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2014/08/28 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2014/08/28/kawasakirb-015/">kawasaki.rb #015 でSphinx導入事例の発表をしてきました #kwskrb #sphinxjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2014/07/13 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/sphinx' class="muted-link">
+      [<span class="Label Label--gray">Sphinx</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2014/07/13/kawasakirb-011-012-013/">kawasaki.rb #013 でSphinx導入事例の発表をしてきました と #011 #012 参加記録 #kwskrb #sphinxjp</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2014/04/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/jekyll' class="muted-link">
+      [<span class="Label Label--gray">Jekyll</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88' class="muted-link">
+      [<span class="Label Label--gray">イベント</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2014/04/01/kawasakirb-010/">kawasaki.rb #010 で発表してきました #kwskrb</a>
+    </li>
+  
+</ol>
+
+
+    </div>
+
+  
+
+      </div>
+
+      <div id="side" class="bg-white">
+        <div>
+          
+  <div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <h3>Link</h3>
+  <ul>
+    <li>
+      <a href="https://github.com/gosyujin">GitHub</a>
+    </li>
+    <li>
+      <a href="http://www.slideshare.net/kk_Ataka">Slideshare</a>
+    </li>
+    <li>
+      <a href="http://connpass.com/user/kk_Ataka/">Connpass</a>
+    </li>
+ </ul>
+</div>
+
+
+
+
+
+  <div id="recent" class="Box Box-blue p-2 mb-3 mt-5">
+    <a href="https://note.gosyujin.com"><h3>Recent Entry</h3></a>
+    <ul>
+      
+        <li>
+          <span>19/8/29 </span>
+          
+          <a class="mb-2" href="/2019/08/29/eclipse-deployment-assembly/">Eclipseの動的Webプロジェクトから別プロジェクト(自作ライブラリ)を参照する</a>
+        </li>
+      
+        <li>
+          <span>19/7/9 </span>
+          
+          <a class="mb-2" href="/2019/07/09/android-studio-code-format/">Android Studioのコードフォーマットをプロジェクトで統一する</a>
+        </li>
+      
+        <li>
+          <span>19/7/2 </span>
+          
+          <a class="mb-2" href="/2019/07/02/jsp-js-mix/">JSPのスクリプトレットとjavascriptで同じ変数を使ってハマった話</a>
+        </li>
+      
+        <li>
+          <span>19/6/20 </span>
+          
+          <a class="mb-2" href="/2019/06/20/stty-ixon/">Ctrl&#43;Sで画面停止する機能を無効化する</a>
+        </li>
+      
+        <li>
+          <span>19/6/13 </span>
+          
+          <a class="mb-2" href="/2019/06/13/sqlserver-varchar-nvarchar/">SQL Serverでnvarchar(x)のカラムにx文字入らないのはなぜ</a>
+        </li>
+      
+        <li>
+          <span>19/6/3 </span>
+          
+          <a class="mb-2" href="/2019/06/03/sqlserver-show-columns-logical-name/">SQL Serverのカラムに設定されている論理名をまとめて取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/21 </span>
+          
+          <a class="mb-2" href="/2019/05/21/sqlserver-query-parameter/">SQL Serverの動的管理ビューから、実行したSQL(とバインド変数)を取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/2 </span>
+          
+          <a class="mb-2" href="/2019/05/02/sqlserver-convert-implicit/">SQL Serverで実行したSQLが暗黙の型変換が起こっているかどうかはどうやって調べたらよいのか</a>
+        </li>
+      
+        <li>
+          <span>19/4/23 </span>
+          
+          <a class="mb-2" href="/2019/04/23/database-alter-table/">色々なDBのバージョン確認方法とか論理名のつけ方とか</a>
+        </li>
+      
+        <li>
+          <span>19/4/15 </span>
+          
+          <a class="mb-2" href="/2019/04/15/sqlserver-collation-name/">SQL Serverでの照合順序の確認方法</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+  <div id="tags" class="Box Box--blue p-2 mb-3 mt-5">
+    <a href="/tags/"><h3>Tags</h3></a>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/a5-sql-mk-2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">A5 SQL Mk-2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/api" class="link-gray text-emphasized css-truncate-target">
+          <span class="">API</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/agile" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Agile</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/android" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Android</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ansible" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ansible</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/application" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Application</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/bundle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Bundle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/chef" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Chef</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/db2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">DB2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/dropbox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Dropbox</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/eclipse" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Eclipse</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/evernote" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Evernote</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/firefox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Firefox</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/fluentd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Fluentd</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/git" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Git</span>
+        </a>
+        <span class="text-right Counter">16</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/github" class="link-gray text-emphasized css-truncate-target">
+          <span class="">GitHub</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gmail" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gmail</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/golang" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Golang</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gradle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gradle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haml" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haml</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haskell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haskell</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/heroku" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Heroku</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/homebrew" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Homebrew</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hubot" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hubot</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hugo" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hugo</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ie" class="link-gray text-emphasized css-truncate-target">
+          <span class="">IE</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jsp" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JSP</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Java</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/javascript" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JavaScript</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jekyll" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jekyll</span>
+        </a>
+        <span class="text-right Counter">20</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jenkins" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jenkins</span>
+        </a>
+        <span class="text-right Counter">7</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/liquid" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Liquid</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/lokka" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Lokka</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mac" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Mac</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/markdown" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Markdown</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mysql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">MySql</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oauth" class="link-gray text-emphasized css-truncate-target">
+          <span class="">OAuth</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oracle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Oracle</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/postgresql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">PostgreSQL</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/python" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Python</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rspec" class="link-gray text-emphasized css-truncate-target">
+          <span class="">RSpec</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rails" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Rails</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/redmine" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Redmine</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ruby" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ruby</span>
+        </a>
+        <span class="text-right Counter">75</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql-server" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL Server</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sqlite3" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQLite3</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/scala" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Scala</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/selenium" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Selenium</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/shell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Shell</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sinatra" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sinatra</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/slideshare" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SlideShare</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/solaris" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Solaris</span>
+        </a>
+        <span class="text-right Counter">12</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sphinx" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sphinx</span>
+        </a>
+        <span class="text-right Counter">18</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/startup" class="link-gray text-emphasized css-truncate-target">
+          <span class="">StartUp</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/subversion" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Subversion</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/tdd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">TDD</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/test" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Test</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/translate" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Translate</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/twitter" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Twitter</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/unix" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Unix</span>
+        </a>
+        <span class="text-right Counter">14</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vb" class="link-gray text-emphasized css-truncate-target">
+          <span class="">VB</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vim" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Vim</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wicket" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wicket</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wiki" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wiki</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/windows" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Windows</span>
+        </a>
+        <span class="text-right Counter">25</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ios" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iOS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/iphone" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iPhone</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java-ja" class="link-gray text-emphasized css-truncate-target">
+          <span class="">java-ja</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/node.js" class="link-gray text-emphasized css-truncate-target">
+          <span class="">node.js</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rest" class="link-gray text-emphasized css-truncate-target">
+          <span class="">reST</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/xquery" class="link-gray text-emphasized css-truncate-target">
+          <span class="">xQuery</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%81%95%e3%81%8f%e3%82%89vps" class="link-gray text-emphasized css-truncate-target">
+          <span class="">さくらVPS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%82%a4%e3%83%99%e3%83%b3%e3%83%88" class="link-gray text-emphasized css-truncate-target">
+          <span class="">イベント</span>
+        </a>
+        <span class="text-right Counter">27</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%83%8d%e3%82%bf" class="link-gray text-emphasized css-truncate-target">
+          <span class="">ネタ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%96%87%e5%ad%97%e3%82%b3%e3%83%bc%e3%83%89" class="link-gray text-emphasized css-truncate-target">
+          <span class="">文字コード</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%97%a5%e8%a8%98" class="link-gray text-emphasized css-truncate-target">
+          <span class="">日記</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e8%aa%bf%e6%9f%bb%e3%83%ad%e3%82%b0" class="link-gray text-emphasized css-truncate-target">
+          <span class="">調査ログ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+  </div>
+
+
+<div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <a href="https://pixe.la/" target="_blank"><h3>PageView@Pixela</h3></a>
+  <div id="svg-load-area"></div>
+</div>
+
+
+
+        </div>
+        <aside>
+          
+  
+  
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#java-イベント-jvm勉強会に行ってきました">[Java][イベント]JVM勉強会に行ってきました</a></li>
+<li><a href="#参考資料">参考資料</a></li>
+<li><a href="#本編">本編</a></li>
+<li><a href="#最後の最後に">最後の最後に</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+
+
+        </aside>
+      </div>
+
+      <div id="footer" class="pt-2 pb-3 bg-white text-center">
+        <span class="text-small text-gray">
+  Powered by
+  <a href="https://gohugo.io" class="link-gray-dark">Hugo</a>
+  
+  
+  0.40.1 2018-04-25T17:16:11Z theme based on
+  <a href="https://github.com/qqhann/hugo-primer" class="link-gray-dark">Hugo-Primer</a>
+  &#x00A9; 2009-2019 <a href="https://gosyujin.com" class="link-gray-dark">kk_Ataka</a>
+</span>
+
+      </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        $('#svg-load-area').load('https://pixe.la/v1/users/gosyujin/graphs/page-view?mode=short', function(){
+           tippy('.each-day', {
+             arrow: true
+           });
+        });
+      });
+    </script>
+
+    
+    
+    
+    
+  </body>
+</html>

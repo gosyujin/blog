@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+      
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-34929069-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+    
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+      
+  Subversionで2ヶ所のリポジトリの同期を取るメモ - kk_Atakaの日記
+
+    </title>
+
+    
+      <meta name="description" property="og:description" content="[Solaris][備忘録][Subversion]Subversionで2 …">
+    
+
+    <meta name="apple-mobile-web-app-title" content="kk_Atakaの日記">
+
+    <link rel="stylesheet" href="/css/primer-syntax.css">
+    <link rel="stylesheet" href="/css/primer-build.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+  </head>
+
+  <body class="bg-gray">
+    <div id="holy" class="container-lg bg-white h-100">
+
+      <div id="header" class="px-1 bg-white">
+        <nav class="UnderlineNav UnderlineNav--right px-2">
+  <a class="UnderlineNav-actions muted-link" href="https://note.gosyujin.com">
+    kk_Atakaの日記
+  </a>
+
+  
+    
+
+    <div class="UnderlineNav-body">
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/about/">
+            
+            <span>About</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/">
+            
+            <span>Archives</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/tags/">
+            
+            <span>Tags</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/bookmark/">
+            
+            <span>Bookmark</span>
+          </a>
+        
+      
+    </div>
+  
+</nav>
+
+      </div>
+
+      <div role="main" id="main" class="holy-main markdown-body px-4 bg-white">
+        
+  
+  
+    <div>
+      <h1>Subversionで2ヶ所のリポジトリの同期を取るメモ</h1>
+      <div class="Subhead-description">
+        
+        
+        <div>
+  <ul>
+    <li>
+      Tags:
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+
+
+    </li>
+    <li>
+      初版発行:
+      2012/04/17
+    </li>
+    <li>
+      最終更新:
+      
+        2019/07/11
+        <a href="https://github.com/gosyujin/gosyujin.github.io/commit/06e5a9978d42cdade120ea9f6b51110a8982464a">備忘録タグは何にでも付けられてしまうので使用しない</a>
+      
+    </li>
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#solaris-備忘録-subversion-subversionで2ヶ所のリポジトリの同期を取るメモ">[Solaris][備忘録][Subversion]Subversionで2ヶ所のリポジトリの同期を取るメモ</a></li>
+<li><a href="#前回のあらすじ">前回のあらすじ</a></li>
+<li><a href="#参考サイト">参考サイト</a></li>
+<li><a href="#前提">前提</a></li>
+<li><a href="#差分のdumpとってload-失敗">差分のdumpとってload(失敗)</a>
+<ul>
+<li><a href="#aサーバ">Aサーバ</a></li>
+<li><a href="#bサーバ">Bサーバ</a></li>
+</ul></li>
+<li><a href="#hotcopy-成功">hotcopy(成功)</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+    <article>
+     <section class="pb-6 mb-3 border-bottom">
+        
+
+<h2 id="solaris-備忘録-subversion-subversionで2ヶ所のリポジトリの同期を取るメモ">[Solaris][備忘録][Subversion]Subversionで2ヶ所のリポジトリの同期を取るメモ</h2>
+
+<h2 id="前回のあらすじ">前回のあらすじ</h2>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/kk_Ataka/20120115/1326624864:title">http://d.hatena.ne.jp/kk_Ataka/20120115/1326624864:title</a></li>
+</ul>
+
+<h2 id="参考サイト">参考サイト</h2>
+
+<ul>
+<li><a href="http://www.asahi-net.or.jp/~iu9m-tcym/svndoc/svn_backup.html:title">http://www.asahi-net.or.jp/~iu9m-tcym/svndoc/svn_backup.html:title</a></li>
+<li><a href="http://www.ilovex.co.jp/blog/system/other/subversion.html:title">http://www.ilovex.co.jp/blog/system/other/subversion.html:title</a></li>
+<li><a href="http://www.02.246.ne.jp/~torutk/subversion/intro.html:title">http://www.02.246.ne.jp/~torutk/subversion/intro.html:title</a></li>
+<li><a href="http://d.hatena.ne.jp/pasela/20090206/svn_backup:title">http://d.hatena.ne.jp/pasela/20090206/svn_backup:title</a></li>
+<li><a href="http://terai.xrea.jp/Subversion.html:title">http://terai.xrea.jp/Subversion.html:title</a></li>
+</ul>
+
+<h2 id="前提">前提</h2>
+
+<ul>
+<li>以下の二つのサーバがある
+
+<ul>
+<li>Aサーバ:開発を進んでいるリポジトリがある(r222)</li>
+<li>Bサーバ:これからAサーバのリポジトリと同期をとりたいリポジトリがある(r111)</li>
+</ul></li>
+</ul>
+
+<h2 id="差分のdumpとってload-失敗">差分のdumpとってload(失敗)</h2>
+
+<h3 id="aサーバ">Aサーバ</h3>
+
+<ul>
+<li>進んでいる分のダンプを取る。
+
+<ul>
+<li>rオプションでダンプを取るリビジョンを指定できる。一つだけだとそのリビジョンだけ。(222ならリビジョン222)範囲指定する場合はAAA:BBBとする</li>
+</ul></li>
+</ul>
+
+<!-- -->
+<div class="highlight"><pre class="chroma">$ svnadmin dump リポジトリパス(/home/xxx/yyyなど) -r 111:222 --incremental &gt; repo.dump</pre></div>
+<ul>
+<li>これをなんらかの方法でBサーバへ移動する(ftpでもUSBでも)</li>
+</ul>
+
+<h3 id="bサーバ">Bサーバ</h3>
+
+<ul>
+<li>svnadmin loadコマンドで差分ダンプファイルを流しこむ。
+
+<ul>
+<li>リビジョンがかぶっているとエラー(リビジョン111未満のもの)</li>
+</ul></li>
+</ul>
+
+<!-- -->
+<div class="highlight"><pre class="chroma">$ svnadmin load リポジトリパス(/home/xxx/yyyなど) &lt; repo.dump
+&lt;&lt;&lt; オリジナルのリビジョン 111 に基づき、新しいトランザクションを開始しました
+     * パスを追加しています : trunk/xxx ...svnadmin: ファイルが既に存在します: ファイルシステム &#39;リポジトリパス&#39;, トランザクション xxx-xx, パス &#39;trunk/xxx&#39;</pre></div>
+<ul>
+<li>-   112からダンプしたファイルをloadする…とうまくいく予定だったのだが、なんかファイルのチェックサムが違うといわれた……。</li>
+</ul>
+
+<!-- -->
+<div class="highlight"><pre class="chroma">$ svnadmin load リポジトリパス(/home/xxx/yyyなど) &lt; repo.dump
+&lt;&lt;&lt; オリジナルのリビジョン 112 に基づき、新しいトランザクションを開始しました
+     * パスを編集しています : trunk/xxx/a.sh ... 完了しました。
+
+------- 新しいリビジョン xxx を (オリジナルのリビジョン xxx からロードして) コミットしました &gt;&gt;&gt;
+
+&lt;&lt;&lt; オリジナルのリビジョン 113 に基づき、新しいトランザクションを開始しました
+     * パスを編集しています : trunk/xxx/b.sh ... 完了しました。
+     * パスを編集しています : trunk/xxx/c.sh ...
+     svnadmin: ファイル &#39;/trunk/xxx/c.sh&#39; のチェックサムが一致しませんでした:
+   期待:  f566e489511cea2fd1e6 ...
+   実際:  0f76ab4f5d0625e9de9c ...</pre></div>
+<p>フルダンプをとる =&gt; 新しくリポジトリを作成 =&gt; loadでも同じファイル(リビジョンは違った)でコケたので別の方法を考える……。</p>
+
+<h2 id="hotcopy-成功">hotcopy(成功)</h2>
+
+<blockquote>
+<p>このサブコマンドは、すべてのフック、設定ファイル、そしてもちろんデータベースファイルを含む、リポジトリの完全な「ホット」バックアップを作成します。</p>
+
+<p><cite><a href="http://www.caldron.jp/~nabetaro/svn/svnbook-1.4-final/svn.ref.svnadmin.c.hotcopy.html">http://www.caldron.jp/~nabetaro/svn/svnbook-1.4-final/svn.ref.svnadmin.c.hotcopy.html</a></cite></p>
+</blockquote>
+
+<p>ただし可搬性に乏しいとの事。今回は同マシン、OS、Subversionバージョンなので大丈夫だと思う。まずAサーバでコピー。</p>
+<div class="highlight"><pre class="chroma">$ svnadmin hotcopy リポジトリパス(/home/xxx/yyyなど) コピー先のリポジトリパス
+a /home/xxx/yyy OK
+a /home/xxx/yyy/hooks OK
+a /home/xxx/yyy/hooks/start-commit.tmpl 3K
+...
+a /home/xxx/yyy/format 1K</pre></div>
+<p>これをBサーバへ持ってくるだけ。フルバックアップしかできないのでこれしか方法はない？</p>
+
+<p>とりあえず一時しのぎはできたけど、チェックサム解消法も考えないといけないな。</p>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/replication/20120405/1333548839:title">http://d.hatena.ne.jp/replication/20120405/1333548839:title</a></li>
+<li><a href="http://rack990.sakura.ne.jp/archives/entry-184.html:title">http://rack990.sakura.ne.jp/archives/entry-184.html:title</a></li>
+<li><a href="http://d.hatena.ne.jp/espresso3389/20090208:title">http://d.hatena.ne.jp/espresso3389/20090208:title</a></li>
+<li><a href="http://web.archive.org/web/20101221154224/http://nonn-et-twk.net/twk/svn-checksum-mismatch:title">http://web.archive.org/web/20101221154224/http://nonn-et-twk.net/twk/svn-checksum-mismatch:title</a></li>
+<li><a href="http://glob.bushi.net.nz/glob/2007/02/14/subversion-checksum-mismatch-easy-workaround/:title">http://glob.bushi.net.nz/glob/2007/02/14/subversion-checksum-mismatch-easy-workaround/:title</a></li>
+<li><a href="http://weekbuild.blog39.fc2.com/?mode=m&amp;no=30:title">http://weekbuild.blog39.fc2.com/?mode=m&amp;no=30:title</a></li>
+<li><a href="http://www.caldron.jp/~nabetaro/svn/svnbook-1.4-final/svn.ref.svnadmin.c.hotcopy.html:title">http://www.caldron.jp/~nabetaro/svn/svnbook-1.4-final/svn.ref.svnadmin.c.hotcopy.html:title</a></li>
+</ul>
+
+<p>kk_Ataka</p>
+
+<p>うーん、同じリポジトリ間で再び同期とったらいけたなー<br>違う点はdumpファイルも絶対パスにしてたくらいだけど<br>関係ないよなぁ</p>
+
+<p>1347359483</p>
+
+      </section>
+    </article>
+
+    <div class="Subhead-description">
+      
+      <nav class="paginate-container">
+  <div class="pagination">
+      
+        <a href="https://note.gosyujin.com/2012/04/10/1334058674/" class="pagination_overflow previous_page">
+          Prev: 
+          12/4/10
+          Pro Gitと入門Gitと入門gitでGit …
+        </a>
+      
+
+      <a href="https://note.gosyujin.com" class="pagination_center">
+        Archives
+      </a>
+      </span>
+
+      
+        <a href="https://note.gosyujin.com/2012/04/20/1334933158/" class="pagination_overflow next_page">
+          Next: 
+          12/4/20
+          ZenTestで実行したRSpecの結果をGrowlで通知し …
+        </a>
+      
+  </div>
+</nav>
+
+      
+
+
+
+<h2>関連記事(この記事の初版より古い記事はリンクがグレーで表示されます)</h2>
+<ol>
+  
+    
+      <li class="older-post">
+    
+      <span>2012/01/15 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/01/15/1326624864/">Subversionのリポジトリをサーバ間でまるごと移動する</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/22 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/22/1324573161/">SolarisにSubversionをインストールするときのメモ</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/12/12 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/git' class="muted-link">
+      [<span class="Label Label--gray">Git</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/12/12/git-svn-dcommit/">git-svnインストールからgit svn dcommit完了までの手順</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2012/04/02 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/04/02/1333369857/">Subversionでファイルを分けてコミットする</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2013/09/05 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/git' class="muted-link">
+      [<span class="Label Label--gray">Git</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2013/09/05/svn-proxy-error-by-git-svn/">Subversionのproxy設定でいつもハマるやつ</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/16 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/unix' class="muted-link">
+      [<span class="Label Label--gray">Unix</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/16/1324086694/">svn infoコマンドでリビジョン番号を抜き出す</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/15 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/redmine' class="muted-link">
+      [<span class="Label Label--gray">Redmine</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/15/1323951847/">RedmineとApacheを連携させるPassengerをインストールできなかった</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/13 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/subversion' class="muted-link">
+      [<span class="Label Label--gray">Subversion</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/unix' class="muted-link">
+      [<span class="Label Label--gray">Unix</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/13/1323783496/">svn updateコマンド以外でリビジョン番号を抜き出す</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/12 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/unix' class="muted-link">
+      [<span class="Label Label--gray">Unix</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/shell' class="muted-link">
+      [<span class="Label Label--gray">Shell</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/12/1323701022/">ファイルの拡張子を見て適切なコマンドで解凍してくれるスクリプトを組んだ</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/10 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/10/1323541524/">tarコマンドでzオプションを使わずにファイルを解凍する</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/09 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/unix' class="muted-link">
+      [<span class="Label Label--gray">Unix</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/09/1323474254/">Unixでファイル圧縮・解凍するときに使うコマンドをまとめた</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/08 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/08/1323357042/">Solarisで現在のOSバージョンやパッチバージョンを確認する</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/01/1322746718/">DAT装置の使い方 超簡易版(Solaris)</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/09/14 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/09/14/1316002377/">Solarisのパッケージを作ってみる もう少し学んだ版</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/09/12 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/09/12/1315826713/">Solarisのパッケージを作ってみる</a>
+    </li>
+  
+</ol>
+
+
+    </div>
+
+  
+
+      </div>
+
+      <div id="side" class="bg-white">
+        <div>
+          
+  <div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <h3>Link</h3>
+  <ul>
+    <li>
+      <a href="https://github.com/gosyujin">GitHub</a>
+    </li>
+    <li>
+      <a href="http://www.slideshare.net/kk_Ataka">Slideshare</a>
+    </li>
+    <li>
+      <a href="http://connpass.com/user/kk_Ataka/">Connpass</a>
+    </li>
+ </ul>
+</div>
+
+
+
+
+
+  <div id="recent" class="Box Box-blue p-2 mb-3 mt-5">
+    <a href="https://note.gosyujin.com"><h3>Recent Entry</h3></a>
+    <ul>
+      
+        <li>
+          <span>19/8/29 </span>
+          
+          <a class="mb-2" href="/2019/08/29/eclipse-deployment-assembly/">Eclipseの動的Webプロジェクトから別プロジェクト(自作ライブラリ)を参照する</a>
+        </li>
+      
+        <li>
+          <span>19/7/9 </span>
+          
+          <a class="mb-2" href="/2019/07/09/android-studio-code-format/">Android Studioのコードフォーマットをプロジェクトで統一する</a>
+        </li>
+      
+        <li>
+          <span>19/7/2 </span>
+          
+          <a class="mb-2" href="/2019/07/02/jsp-js-mix/">JSPのスクリプトレットとjavascriptで同じ変数を使ってハマった話</a>
+        </li>
+      
+        <li>
+          <span>19/6/20 </span>
+          
+          <a class="mb-2" href="/2019/06/20/stty-ixon/">Ctrl&#43;Sで画面停止する機能を無効化する</a>
+        </li>
+      
+        <li>
+          <span>19/6/13 </span>
+          
+          <a class="mb-2" href="/2019/06/13/sqlserver-varchar-nvarchar/">SQL Serverでnvarchar(x)のカラムにx文字入らないのはなぜ</a>
+        </li>
+      
+        <li>
+          <span>19/6/3 </span>
+          
+          <a class="mb-2" href="/2019/06/03/sqlserver-show-columns-logical-name/">SQL Serverのカラムに設定されている論理名をまとめて取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/21 </span>
+          
+          <a class="mb-2" href="/2019/05/21/sqlserver-query-parameter/">SQL Serverの動的管理ビューから、実行したSQL(とバインド変数)を取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/2 </span>
+          
+          <a class="mb-2" href="/2019/05/02/sqlserver-convert-implicit/">SQL Serverで実行したSQLが暗黙の型変換が起こっているかどうかはどうやって調べたらよいのか</a>
+        </li>
+      
+        <li>
+          <span>19/4/23 </span>
+          
+          <a class="mb-2" href="/2019/04/23/database-alter-table/">色々なDBのバージョン確認方法とか論理名のつけ方とか</a>
+        </li>
+      
+        <li>
+          <span>19/4/15 </span>
+          
+          <a class="mb-2" href="/2019/04/15/sqlserver-collation-name/">SQL Serverでの照合順序の確認方法</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+  <div id="tags" class="Box Box--blue p-2 mb-3 mt-5">
+    <a href="/tags/"><h3>Tags</h3></a>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/a5-sql-mk-2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">A5 SQL Mk-2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/api" class="link-gray text-emphasized css-truncate-target">
+          <span class="">API</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/agile" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Agile</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/android" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Android</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ansible" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ansible</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/application" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Application</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/bundle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Bundle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/chef" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Chef</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/db2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">DB2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/dropbox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Dropbox</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/eclipse" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Eclipse</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/evernote" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Evernote</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/firefox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Firefox</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/fluentd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Fluentd</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/git" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Git</span>
+        </a>
+        <span class="text-right Counter">16</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/github" class="link-gray text-emphasized css-truncate-target">
+          <span class="">GitHub</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gmail" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gmail</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/golang" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Golang</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gradle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gradle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haml" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haml</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haskell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haskell</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/heroku" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Heroku</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/homebrew" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Homebrew</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hubot" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hubot</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hugo" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hugo</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ie" class="link-gray text-emphasized css-truncate-target">
+          <span class="">IE</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jsp" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JSP</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Java</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/javascript" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JavaScript</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jekyll" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jekyll</span>
+        </a>
+        <span class="text-right Counter">20</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jenkins" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jenkins</span>
+        </a>
+        <span class="text-right Counter">7</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/liquid" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Liquid</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/lokka" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Lokka</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mac" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Mac</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/markdown" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Markdown</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mysql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">MySql</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oauth" class="link-gray text-emphasized css-truncate-target">
+          <span class="">OAuth</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oracle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Oracle</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/postgresql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">PostgreSQL</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/python" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Python</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rspec" class="link-gray text-emphasized css-truncate-target">
+          <span class="">RSpec</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rails" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Rails</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/redmine" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Redmine</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ruby" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ruby</span>
+        </a>
+        <span class="text-right Counter">75</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql-server" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL Server</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sqlite3" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQLite3</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/scala" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Scala</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/selenium" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Selenium</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/shell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Shell</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sinatra" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sinatra</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/slideshare" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SlideShare</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/solaris" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Solaris</span>
+        </a>
+        <span class="text-right Counter">12</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sphinx" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sphinx</span>
+        </a>
+        <span class="text-right Counter">18</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/startup" class="link-gray text-emphasized css-truncate-target">
+          <span class="">StartUp</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/subversion" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Subversion</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/tdd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">TDD</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/test" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Test</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/translate" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Translate</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/twitter" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Twitter</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/unix" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Unix</span>
+        </a>
+        <span class="text-right Counter">14</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vb" class="link-gray text-emphasized css-truncate-target">
+          <span class="">VB</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vim" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Vim</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wicket" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wicket</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wiki" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wiki</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/windows" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Windows</span>
+        </a>
+        <span class="text-right Counter">25</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ios" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iOS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/iphone" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iPhone</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java-ja" class="link-gray text-emphasized css-truncate-target">
+          <span class="">java-ja</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/node.js" class="link-gray text-emphasized css-truncate-target">
+          <span class="">node.js</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rest" class="link-gray text-emphasized css-truncate-target">
+          <span class="">reST</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/xquery" class="link-gray text-emphasized css-truncate-target">
+          <span class="">xQuery</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%81%95%e3%81%8f%e3%82%89vps" class="link-gray text-emphasized css-truncate-target">
+          <span class="">さくらVPS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%82%a4%e3%83%99%e3%83%b3%e3%83%88" class="link-gray text-emphasized css-truncate-target">
+          <span class="">イベント</span>
+        </a>
+        <span class="text-right Counter">27</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%83%8d%e3%82%bf" class="link-gray text-emphasized css-truncate-target">
+          <span class="">ネタ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%96%87%e5%ad%97%e3%82%b3%e3%83%bc%e3%83%89" class="link-gray text-emphasized css-truncate-target">
+          <span class="">文字コード</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%97%a5%e8%a8%98" class="link-gray text-emphasized css-truncate-target">
+          <span class="">日記</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e8%aa%bf%e6%9f%bb%e3%83%ad%e3%82%b0" class="link-gray text-emphasized css-truncate-target">
+          <span class="">調査ログ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+  </div>
+
+
+<div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <a href="https://pixe.la/" target="_blank"><h3>PageView@Pixela</h3></a>
+  <div id="svg-load-area"></div>
+</div>
+
+
+
+        </div>
+        <aside>
+          
+  
+  
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#solaris-備忘録-subversion-subversionで2ヶ所のリポジトリの同期を取るメモ">[Solaris][備忘録][Subversion]Subversionで2ヶ所のリポジトリの同期を取るメモ</a></li>
+<li><a href="#前回のあらすじ">前回のあらすじ</a></li>
+<li><a href="#参考サイト">参考サイト</a></li>
+<li><a href="#前提">前提</a></li>
+<li><a href="#差分のdumpとってload-失敗">差分のdumpとってload(失敗)</a>
+<ul>
+<li><a href="#aサーバ">Aサーバ</a></li>
+<li><a href="#bサーバ">Bサーバ</a></li>
+</ul></li>
+<li><a href="#hotcopy-成功">hotcopy(成功)</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+
+
+        </aside>
+      </div>
+
+      <div id="footer" class="pt-2 pb-3 bg-white text-center">
+        <span class="text-small text-gray">
+  Powered by
+  <a href="https://gohugo.io" class="link-gray-dark">Hugo</a>
+  
+  
+  0.40.1 2018-04-25T17:16:11Z theme based on
+  <a href="https://github.com/qqhann/hugo-primer" class="link-gray-dark">Hugo-Primer</a>
+  &#x00A9; 2009-2019 <a href="https://gosyujin.com" class="link-gray-dark">kk_Ataka</a>
+</span>
+
+      </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        $('#svg-load-area').load('https://pixe.la/v1/users/gosyujin/graphs/page-view?mode=short', function(){
+           tippy('.each-day', {
+             arrow: true
+           });
+        });
+      });
+    </script>
+
+    
+    
+    
+    
+  </body>
+</html>

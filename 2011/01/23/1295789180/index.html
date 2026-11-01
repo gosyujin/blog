@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+      
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-34929069-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+    
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+      
+  RubyでTwitterにツイートをキメてみる - kk_Atakaの日記
+
+    </title>
+
+    
+      <meta name="description" property="og:description" content="[Ruby][Twitter][API]RubyでTwitterにツイー …">
+    
+
+    <meta name="apple-mobile-web-app-title" content="kk_Atakaの日記">
+
+    <link rel="stylesheet" href="/css/primer-syntax.css">
+    <link rel="stylesheet" href="/css/primer-build.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+  </head>
+
+  <body class="bg-gray">
+    <div id="holy" class="container-lg bg-white h-100">
+
+      <div id="header" class="px-1 bg-white">
+        <nav class="UnderlineNav UnderlineNav--right px-2">
+  <a class="UnderlineNav-actions muted-link" href="https://note.gosyujin.com">
+    kk_Atakaの日記
+  </a>
+
+  
+    
+
+    <div class="UnderlineNav-body">
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/about/">
+            
+            <span>About</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/">
+            
+            <span>Archives</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/tags/">
+            
+            <span>Tags</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/bookmark/">
+            
+            <span>Bookmark</span>
+          </a>
+        
+      
+    </div>
+  
+</nav>
+
+      </div>
+
+      <div role="main" id="main" class="holy-main markdown-body px-4 bg-white">
+        
+  
+  
+    <div>
+      <h1>RubyでTwitterにツイートをキメてみる</h1>
+      <div class="Subhead-description">
+        
+        
+        <div>
+  <ul>
+    <li>
+      Tags:
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+    </li>
+    <li>
+      初版発行:
+      2011/01/23
+    </li>
+    <li>
+      最終更新:
+      
+        2019/04/15
+        <a href="https://github.com/gosyujin/gosyujin.github.io/commit/c1fe96dc0147a12ff32c768e07ff29c53fe6586c">ジェネレータをhugoに変更</a>
+      
+    </li>
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#ruby-twitter-api-rubyでtwitterにツイートをキメてみる">[Ruby][Twitter][API]RubyでTwitterにツイートをキメてみる</a></li>
+<li><a href="#前回までのあらすじ">前回までのあらすじ</a></li>
+<li><a href="#ツイートする方法">ツイートする方法</a></li>
+<li><a href="#signature作成後">signature作成後</a></li>
+<li><a href="#結果">結果</a></li>
+<li><a href="#ソース">ソース</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+    <article>
+     <section class="pb-6 mb-3 border-bottom">
+        
+
+<h2 id="ruby-twitter-api-rubyでtwitterにツイートをキメてみる">[Ruby][Twitter][API]RubyでTwitterにツイートをキメてみる</h2>
+
+<h2 id="前回までのあらすじ">前回までのあらすじ</h2>
+
+<ol>
+<li><a href="http://d.hatena.ne.jp/kk_Ataka/20101121/1290271210:title">http://d.hatena.ne.jp/kk_Ataka/20101121/1290271210:title</a></li>
+<li><a href="http://d.hatena.ne.jp/kk_Ataka/20101130/1291125511:title">http://d.hatena.ne.jp/kk_Ataka/20101130/1291125511:title</a></li>
+<li><a href="http://d.hatena.ne.jp/kk_Ataka/20101207/1291733295:title">http://d.hatena.ne.jp/kk_Ataka/20101207/1291733295:title</a></li>
+</ol>
+
+<p>ターミナルからOAuth認証をキメて、タイムラインを見られるようになりました。最後にターミナルからツイートが出来れば一応Twitterの見る・書くがライブラリ無しでできたことになります。</p>
+
+<h2 id="ツイートする方法">ツイートする方法</h2>
+
+<ol>
+<li>signatureを作成する。必要な値は以下のとおり。
+
+<ol>
+<li>oauth_consumer_key</li>
+<li>oauth_nonce</li>
+<li>oauth_signature</li>
+<li>oauth_signature_method</li>
+<li>oauth_timestamp</li>
+<li>oauth_token</li>
+<li>oauth_version</li>
+<li>status <span style="color:#FF0000;">New!</span></li>
+</ol></li>
+</ol>
+
+<p>statusっていうのがツイートの本文ですね。signature作成するのにエスケープします。作成後のheaderはこんな感じ。[1]statusには「確認確認」って入ってます。</p>
+<div class="highlight"><pre class="chroma">{
+    &#34;oauth_nonce&#34;=&gt;&#34;3c8293f9c5a0295148d428a26edb9f46&#34;, 
+    &#34;oauth_timestamp&#34;=&gt;&#34;1295784908&#34;, 
+    &#34;oauth_signature_method&#34;=&gt;&#34;HMAC-SHA1&#34;, 
+    &#34;oauth_consumer_key&#34;=&gt;&#34;XXXXXXXXXXXXXXXXXXXXXX&#34;, 
+    &#34;oauth_token&#34;=&gt;&#34;99999999-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY&#34;, 
+    &#34;oauth_signature&#34;=&gt;&#34;UKt1BmJ+UWNWrSmBuAyJ40iiCNY=&#34;, 
+    &#34;status&#34;=&gt;&#34;%E7%A2%BA%E8%AA%8D%E7%A2%BA%E8%AA%8D&#34;, 
+    &#34;oauth_version&#34;=&gt;&#34;1.0&#34;
+}</pre></div>
+<h2 id="signature作成後">signature作成後</h2>
+
+<ul>
+<li>signatureを作成したら、headerからstatusを消します</li>
+<li>残ったheaderをアルファベット順に並べ、xxx=yyy<span style="color:#FF0000;">,</span>vvv=zzz……の形で連結します。連結後はこんな感じ</li>
+</ul>
+
+<!-- -->
+<div class="highlight"><pre class="chroma">oauth_consumer_key=XXXXXXXXXXXXXXXXXXXXXX,oauth_nonce=341d852d61cdc3c22e3e847b0ab69d20,oauth_signature=MR5WEJ1qHuE49ozgRYduNJ%2BBiCs%3D,oauth_signature_method=HMAC-SHA1,oauth_timestamp=1295785315,oauth_token=99999999-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY,oauth_version=1.0</pre></div>
+<ul>
+<li>連結した上記の値をAuthorizationヘッダに入れる。入れた後はこんな感じ。</li>
+</ul>
+
+<!-- -->
+<div class="highlight"><pre class="chroma">&#34;Authorization&#34;=&gt;&#34;OAuth oauth_consumer_key=XXXXXXXXXXXXXXXXXXXXXX,oauth_nonce=341d852d61cdc3c22e3e847b0ab69d20,oauth_signature=MR5WEJ1qHuE49ozgRYduNJ%2BBiCs%3D,oauth_signature_method=HMAC-SHA1,oauth_timestamp=1295785315,oauth_token=99999999-YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY,oauth_version=1.0&#34;</pre></div>
+<ul>
+<li>Authorizationヘッダを作成したら<a href="http://api.twitter.com/1/statuses/home_timeline.jsonへPOST。また、ツイート本文を「status=本文」の形でくっつける">http://api.twitter.com/1/statuses/home_timeline.jsonへPOST。また、ツイート本文を「status=本文」の形でくっつける</a></li>
+</ul>
+
+<h2 id="結果">結果</h2>
+
+<p>以上で、Twitterにツイートが完了しました！　おっぱいきたーー</p>
+
+<p>[f:id:kk_Ataka:20110123215838j:image]</p>
+
+<h2 id="ソース">ソース</h2>
+
+<p>ソースはこんな感じです。</p>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="c1"># -*- encoding: UTF-8 -*-</span>
+
+<span class="nb">require</span> <span class="s1">&#39;openssl&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;nkf&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;time&#39;</span>
+
+<span class="c1"># 署名</span>
+<span class="k">def</span> <span class="nf">sigunature</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> 
+        <span class="n">consumer_secret</span><span class="p">,</span> 
+        <span class="n">oauth_token_secret</span><span class="p">,</span> 
+        <span class="n">url</span><span class="p">,</span> 
+        <span class="n">oauth_header</span><span class="o">=</span><span class="kp">nil</span><span class="p">)</span>
+    <span class="c1"># sigunature_keyの作成</span>
+    <span class="c1"># リクエストトークン時は&#34;CONSUMER_SECRET&amp;&#34;(アンドが入っている)</span>
+    <span class="c1"># アクセストークン時は&#34;CONSUMER_SECRET&amp;OAUTH_TOKEN_SECRET&#34;として使用</span>
+    <span class="n">sigunature_key</span> <span class="o">=</span> <span class="n">consumer_secret</span> <span class="o">+</span> <span class="s2">&#34;&amp;&#34;</span>
+    <span class="k">if</span> <span class="o">!</span><span class="n">oauth_token_secret</span><span class="o">.</span><span class="n">nil?</span> <span class="k">then</span>
+        <span class="n">sigunature_key</span> <span class="o">+=</span> <span class="n">oauth_token_secret</span>
+    <span class="k">end</span>
+
+    <span class="n">param</span> <span class="o">=</span> <span class="n">sort_and_concat</span><span class="p">(</span><span class="n">oauth_header</span><span class="p">)</span>
+
+    <span class="c1"># メソッド + URL + パラメータ</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">method</span> <span class="o">+</span> <span class="s2">&#34;&amp;&#34;</span> <span class="o">+</span> <span class="n">escape</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&#34;&amp;&#34;</span> <span class="o">+</span> <span class="n">escape</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+    <span class="c1"># hmac_sha1</span>
+    <span class="n">sha1</span> <span class="o">=</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">HMAC</span><span class="o">.</span><span class="n">digest</span><span class="p">(</span><span class="no">OpenSSL</span><span class="o">::</span><span class="no">Digest</span><span class="o">::</span><span class="no">SHA1</span><span class="o">.</span><span class="n">new</span><span class="p">,</span> <span class="n">sigunature_key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="c1"># base64</span>
+    <span class="n">base64</span> <span class="o">=</span> <span class="o">[</span><span class="n">sha1</span><span class="o">].</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\n/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">base64</span>
+<span class="k">end</span>
+
+<span class="c1"># 文字列のエスケープ(: / = %をエスケープする。. _ -はそのまま)</span>
+<span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="no">URI</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="no">Regexp</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&#34;[^a-zA-Z0-9._-]&#34;</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="c1"># oauth_headerの情報をアルファベット順に並べ替え &amp; で結合</span>
+<span class="k">def</span> <span class="nf">sort_and_concat</span><span class="p">(</span><span class="n">oauth_header</span><span class="p">)</span>
+    <span class="n">oauth_header_array</span> <span class="o">=</span> <span class="n">oauth_header</span><span class="o">.</span><span class="n">sort</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+    <span class="n">oauth_header_array</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">params</span><span class="o">|</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">..</span><span class="n">params</span><span class="o">.</span><span class="n">length</span>
+            <span class="n">param</span> <span class="o">+=</span> <span class="n">params</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="sx">% params.length </span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="n">param</span> <span class="o">+=</span> <span class="s2">&#34;&amp;&#34;</span>
+            <span class="k">else</span>
+                <span class="n">param</span> <span class="o">+=</span> <span class="s2">&#34;=&#34;</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># -------------------------------------------------------------</span>
+
+<span class="n">update_url</span> <span class="o">=</span> <span class="s2">&#34;http://twitter.com/statuses/update.json&#34;</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="n">update_url</span>
+<span class="c1"># コマンドプロンプトはutf8変換</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">)</span>
+<span class="c1"># text = escape(NKF.nkf(&#39;-w&#39;, ARGV[0]))</span>
+<span class="n">proxy</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+
+<span class="c1"># Twitterで登録したらもらえる</span>
+<span class="n">consumer_key</span> <span class="o">=</span> <span class="s2">&#34;XXXXXXXXXXXXXXXXXXX&#34;</span>
+<span class="n">consumer_secret</span> <span class="o">=</span> <span class="s2">&#34;YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY&#34;</span>
+<span class="c1"># Twitterからもらえるリクエストトークン(最初は使わない)</span>
+<span class="n">oauth_token</span> <span class="o">=</span> <span class="s2">&#34;11111111-ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ&#34;</span>
+<span class="n">oauth_token_secret</span> <span class="o">=</span> <span class="s2">&#34;VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV&#34;</span>
+
+<span class="c1"># oauthパラメータたち(決め打ちのもの)</span>
+<span class="n">oauth_header</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Consumer Key</span>
+    <span class="s2">&#34;oauth_consumer_key&#34;</span> <span class="o">=&gt;</span> <span class="n">consumer_key</span><span class="p">,</span>
+    <span class="c1"># 一意な値</span>
+    <span class="s2">&#34;oauth_nonce&#34;</span> <span class="o">=&gt;</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">Digest</span><span class="o">::</span><span class="no">Digest</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="s1">&#39;MD5&#39;</span><span class="p">,</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_f</span><span class="si">}#{</span><span class="nb">rand</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">),</span> 
+    <span class="c1"># 署名方式(HMAC-SHA1)</span>
+    <span class="s2">&#34;oauth_signature_method&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;HMAC-SHA1&#34;</span><span class="p">,</span>
+    <span class="c1"># リクエスト生成時のタイムスタンプのミリ秒</span>
+    <span class="s2">&#34;oauth_timestamp&#34;</span> <span class="o">=&gt;</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_i</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> 
+    <span class="c1"># バージョン(1.0)</span>
+    <span class="s2">&#34;oauth_version&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;1.0&#34;</span><span class="p">,</span>
+
+    <span class="c1"># アクセストークン</span>
+    <span class="s2">&#34;oauth_token&#34;</span> <span class="o">=&gt;</span> <span class="n">oauth_token</span>
+<span class="p">}</span>
+
+<span class="c1"># headerにツイート追加</span>
+<span class="n">oauth_header</span><span class="o">[</span><span class="s2">&#34;status&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="n">text</span>
+
+<span class="c1"># 署名生成</span>
+<span class="n">oauth_header</span><span class="o">[</span><span class="s2">&#34;oauth_signature&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="n">sigunature</span><span class="p">(</span><span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+                    <span class="n">consumer_secret</span><span class="p">,</span>
+                    <span class="n">oauth_token_secret</span><span class="p">,</span>
+                    <span class="n">url</span><span class="p">,</span>
+                    <span class="n">oauth_header</span><span class="p">)</span>
+
+<span class="c1"># headerからツイート削除</span>
+<span class="n">oauth_header</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&#34;status&#34;</span><span class="p">)</span>
+<span class="c1"># 署名エンコード</span>
+<span class="n">oauth_header</span><span class="o">[</span><span class="s2">&#34;oauth_signature&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="n">oauth_header</span><span class="o">[</span><span class="s2">&#34;oauth_signature&#34;</span><span class="o">]</span><span class="p">)</span>
+<span class="n">param</span> <span class="o">=</span> <span class="n">sort_and_concat</span><span class="p">(</span><span class="n">oauth_header</span><span class="p">)</span>
+
+<span class="n">param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="p">)</span>
+
+<span class="n">header</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&#34;Authorization&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;OAuth &#34;</span> <span class="o">+</span> <span class="n">param</span>
+<span class="p">}</span>
+
+<span class="c1"># POST</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">update_url</span><span class="p">)</span>
+<span class="n">proxy_class</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Proxy</span><span class="p">(</span><span class="n">proxy</span><span class="p">,</span> <span class="mi">8080</span><span class="p">)</span>
+<span class="n">http</span> <span class="o">=</span> <span class="n">proxy_class</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+<span class="n">http</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&#34;status=</span><span class="si">#{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="s2">&#34;200&#34;</span> <span class="k">then</span>
+        <span class="nb">print</span> <span class="s2">&#34;</span><span class="si">#{</span><span class="n">res</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2"> tweet: </span><span class="si">#{</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="k">else</span>
+        <span class="nb">print</span> <span class="s2">&#34;ERROR: </span><span class="si">#{</span><span class="n">res</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="se">\n</span><span class="s2"> </span><span class="si">#{</span><span class="n">res</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span>
+    <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+      </section>
+    </article>
+
+    <div class="Subhead-description">
+      
+      <nav class="paginate-container">
+  <div class="pagination">
+      
+        <a href="https://note.gosyujin.com/2011/01/12/1294833920/" class="pagination_overflow previous_page">
+          Prev: 
+          11/1/12
+          Wicket勉強会に参加しました
+        </a>
+      
+
+      <a href="https://note.gosyujin.com" class="pagination_center">
+        Archives
+      </a>
+      </span>
+
+      
+        <a href="https://note.gosyujin.com/2011/01/23/1295789120/" class="pagination_overflow next_page">
+          Next: 
+          11/1/23
+          MacBook Air 11インチ欲しい！
+        </a>
+      
+  </div>
+</nav>
+
+      
+
+
+
+<h2>関連記事(この記事の初版より古い記事はリンクがグレーで表示されます)</h2>
+<ol>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/12/07 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/12/07/1291733295/">RubyでTwitterのタイムラインを取得してみる</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/11/30 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/11/30/1291125511/">RubyでTwitterのOAuth認証をしてみる その2</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/11/21 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/11/21/1290271210/">RubyでTwitterのOAuth認証をしてみる</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/27 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/evernote' class="muted-link">
+      [<span class="Label Label--gray">Evernote</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/27/1324911671/">EvernoteのAPIをRubyから叩きたい</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/03/08 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/03/08/1299588433/">RubyではてなのWSSE認証をしてはてブにブクマをポストする</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/03/02 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/03/02/1299062938/">Read it LaterをRubyで取得する</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/05/21 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/slideshare' class="muted-link">
+      [<span class="Label Label--gray">SlideShare</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/heroku' class="muted-link">
+      [<span class="Label Label--gray">Heroku</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/05/21/1337605575/">SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/26 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/haml' class="muted-link">
+      [<span class="Label Label--gray">Haml</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/sinatra' class="muted-link">
+      [<span class="Label Label--gray">Sinatra</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/26/1324910284/">SinatraでHaml入門</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/21 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/21/1324477125/">Ruby実行時のオプションをよろしく解析してくれるoptparseを使ってみる</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/15 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/solaris' class="muted-link">
+      [<span class="Label Label--gray">Solaris</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/redmine' class="muted-link">
+      [<span class="Label Label--gray">Redmine</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/15/1323951847/">RedmineとApacheを連携させるPassengerをインストールできなかった</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/07 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/07/1323291938/">ZenTestでRSpecを自動実行できるようにした</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/05 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/redmine' class="muted-link">
+      [<span class="Label Label--gray">Redmine</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/05/1323092947/">RedmineでプラグインインストールしたらTemplateErrorが出た</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/12/04 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/mac' class="muted-link">
+      [<span class="Label Label--gray">Mac</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/unix' class="muted-link">
+      [<span class="Label Label--gray">Unix</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/04/1323009249/">複数のRuby環境の管理・切替ができるrvmをインストールした</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/11/30 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/heroku' class="muted-link">
+      [<span class="Label Label--gray">Heroku</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/11/30/1322662743/">rvm環境でRuby実行時にReadlineエラーが起きた時の対処法</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2011/11/29 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/11/29/1322569582/">pikでインストールしたRubyでbundle exec rubyしたらエラーになった 解決編</a>
+    </li>
+  
+</ol>
+
+
+    </div>
+
+  
+
+      </div>
+
+      <div id="side" class="bg-white">
+        <div>
+          
+  <div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <h3>Link</h3>
+  <ul>
+    <li>
+      <a href="https://github.com/gosyujin">GitHub</a>
+    </li>
+    <li>
+      <a href="http://www.slideshare.net/kk_Ataka">Slideshare</a>
+    </li>
+    <li>
+      <a href="http://connpass.com/user/kk_Ataka/">Connpass</a>
+    </li>
+ </ul>
+</div>
+
+
+
+
+
+  <div id="recent" class="Box Box-blue p-2 mb-3 mt-5">
+    <a href="https://note.gosyujin.com"><h3>Recent Entry</h3></a>
+    <ul>
+      
+        <li>
+          <span>19/8/29 </span>
+          
+          <a class="mb-2" href="/2019/08/29/eclipse-deployment-assembly/">Eclipseの動的Webプロジェクトから別プロジェクト(自作ライブラリ)を参照する</a>
+        </li>
+      
+        <li>
+          <span>19/7/9 </span>
+          
+          <a class="mb-2" href="/2019/07/09/android-studio-code-format/">Android Studioのコードフォーマットをプロジェクトで統一する</a>
+        </li>
+      
+        <li>
+          <span>19/7/2 </span>
+          
+          <a class="mb-2" href="/2019/07/02/jsp-js-mix/">JSPのスクリプトレットとjavascriptで同じ変数を使ってハマった話</a>
+        </li>
+      
+        <li>
+          <span>19/6/20 </span>
+          
+          <a class="mb-2" href="/2019/06/20/stty-ixon/">Ctrl&#43;Sで画面停止する機能を無効化する</a>
+        </li>
+      
+        <li>
+          <span>19/6/13 </span>
+          
+          <a class="mb-2" href="/2019/06/13/sqlserver-varchar-nvarchar/">SQL Serverでnvarchar(x)のカラムにx文字入らないのはなぜ</a>
+        </li>
+      
+        <li>
+          <span>19/6/3 </span>
+          
+          <a class="mb-2" href="/2019/06/03/sqlserver-show-columns-logical-name/">SQL Serverのカラムに設定されている論理名をまとめて取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/21 </span>
+          
+          <a class="mb-2" href="/2019/05/21/sqlserver-query-parameter/">SQL Serverの動的管理ビューから、実行したSQL(とバインド変数)を取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/2 </span>
+          
+          <a class="mb-2" href="/2019/05/02/sqlserver-convert-implicit/">SQL Serverで実行したSQLが暗黙の型変換が起こっているかどうかはどうやって調べたらよいのか</a>
+        </li>
+      
+        <li>
+          <span>19/4/23 </span>
+          
+          <a class="mb-2" href="/2019/04/23/database-alter-table/">色々なDBのバージョン確認方法とか論理名のつけ方とか</a>
+        </li>
+      
+        <li>
+          <span>19/4/15 </span>
+          
+          <a class="mb-2" href="/2019/04/15/sqlserver-collation-name/">SQL Serverでの照合順序の確認方法</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+  <div id="tags" class="Box Box--blue p-2 mb-3 mt-5">
+    <a href="/tags/"><h3>Tags</h3></a>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/a5-sql-mk-2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">A5 SQL Mk-2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/api" class="link-gray text-emphasized css-truncate-target">
+          <span class="">API</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/agile" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Agile</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/android" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Android</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ansible" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ansible</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/application" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Application</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/bundle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Bundle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/chef" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Chef</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/db2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">DB2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/dropbox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Dropbox</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/eclipse" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Eclipse</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/evernote" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Evernote</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/firefox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Firefox</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/fluentd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Fluentd</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/git" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Git</span>
+        </a>
+        <span class="text-right Counter">16</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/github" class="link-gray text-emphasized css-truncate-target">
+          <span class="">GitHub</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gmail" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gmail</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/golang" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Golang</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gradle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gradle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haml" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haml</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haskell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haskell</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/heroku" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Heroku</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/homebrew" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Homebrew</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hubot" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hubot</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hugo" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hugo</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ie" class="link-gray text-emphasized css-truncate-target">
+          <span class="">IE</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jsp" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JSP</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Java</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/javascript" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JavaScript</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jekyll" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jekyll</span>
+        </a>
+        <span class="text-right Counter">20</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jenkins" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jenkins</span>
+        </a>
+        <span class="text-right Counter">7</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/liquid" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Liquid</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/lokka" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Lokka</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mac" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Mac</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/markdown" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Markdown</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mysql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">MySql</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oauth" class="link-gray text-emphasized css-truncate-target">
+          <span class="">OAuth</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oracle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Oracle</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/postgresql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">PostgreSQL</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/python" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Python</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rspec" class="link-gray text-emphasized css-truncate-target">
+          <span class="">RSpec</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rails" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Rails</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/redmine" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Redmine</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ruby" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ruby</span>
+        </a>
+        <span class="text-right Counter">75</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql-server" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL Server</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sqlite3" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQLite3</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/scala" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Scala</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/selenium" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Selenium</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/shell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Shell</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sinatra" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sinatra</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/slideshare" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SlideShare</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/solaris" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Solaris</span>
+        </a>
+        <span class="text-right Counter">12</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sphinx" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sphinx</span>
+        </a>
+        <span class="text-right Counter">18</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/startup" class="link-gray text-emphasized css-truncate-target">
+          <span class="">StartUp</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/subversion" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Subversion</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/tdd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">TDD</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/test" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Test</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/translate" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Translate</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/twitter" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Twitter</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/unix" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Unix</span>
+        </a>
+        <span class="text-right Counter">14</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vb" class="link-gray text-emphasized css-truncate-target">
+          <span class="">VB</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vim" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Vim</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wicket" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wicket</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wiki" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wiki</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/windows" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Windows</span>
+        </a>
+        <span class="text-right Counter">25</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ios" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iOS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/iphone" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iPhone</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java-ja" class="link-gray text-emphasized css-truncate-target">
+          <span class="">java-ja</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/node.js" class="link-gray text-emphasized css-truncate-target">
+          <span class="">node.js</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rest" class="link-gray text-emphasized css-truncate-target">
+          <span class="">reST</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/xquery" class="link-gray text-emphasized css-truncate-target">
+          <span class="">xQuery</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%81%95%e3%81%8f%e3%82%89vps" class="link-gray text-emphasized css-truncate-target">
+          <span class="">さくらVPS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%82%a4%e3%83%99%e3%83%b3%e3%83%88" class="link-gray text-emphasized css-truncate-target">
+          <span class="">イベント</span>
+        </a>
+        <span class="text-right Counter">27</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%83%8d%e3%82%bf" class="link-gray text-emphasized css-truncate-target">
+          <span class="">ネタ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%96%87%e5%ad%97%e3%82%b3%e3%83%bc%e3%83%89" class="link-gray text-emphasized css-truncate-target">
+          <span class="">文字コード</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%97%a5%e8%a8%98" class="link-gray text-emphasized css-truncate-target">
+          <span class="">日記</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e8%aa%bf%e6%9f%bb%e3%83%ad%e3%82%b0" class="link-gray text-emphasized css-truncate-target">
+          <span class="">調査ログ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+  </div>
+
+
+<div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <a href="https://pixe.la/" target="_blank"><h3>PageView@Pixela</h3></a>
+  <div id="svg-load-area"></div>
+</div>
+
+
+
+        </div>
+        <aside>
+          
+  
+  
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#ruby-twitter-api-rubyでtwitterにツイートをキメてみる">[Ruby][Twitter][API]RubyでTwitterにツイートをキメてみる</a></li>
+<li><a href="#前回までのあらすじ">前回までのあらすじ</a></li>
+<li><a href="#ツイートする方法">ツイートする方法</a></li>
+<li><a href="#signature作成後">signature作成後</a></li>
+<li><a href="#結果">結果</a></li>
+<li><a href="#ソース">ソース</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+
+
+        </aside>
+      </div>
+
+      <div id="footer" class="pt-2 pb-3 bg-white text-center">
+        <span class="text-small text-gray">
+  Powered by
+  <a href="https://gohugo.io" class="link-gray-dark">Hugo</a>
+  
+  
+  0.40.1 2018-04-25T17:16:11Z theme based on
+  <a href="https://github.com/qqhann/hugo-primer" class="link-gray-dark">Hugo-Primer</a>
+  &#x00A9; 2009-2019 <a href="https://gosyujin.com" class="link-gray-dark">kk_Ataka</a>
+</span>
+
+      </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        $('#svg-load-area').load('https://pixe.la/v1/users/gosyujin/graphs/page-view?mode=short', function(){
+           tippy('.each-day', {
+             arrow: true
+           });
+        });
+      });
+    </script>
+
+    
+    
+    
+    
+  </body>
+</html>

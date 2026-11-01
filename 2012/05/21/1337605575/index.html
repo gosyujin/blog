@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+      
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-34929069-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+    
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+      
+  SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした - kk_Atakaの日記
+
+    </title>
+
+    
+      <meta name="description" property="og:description" content="[SlideShare][Heroku][Ruby][API]SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした あらすじ slideshareを社内 …">
+    
+
+    <meta name="apple-mobile-web-app-title" content="kk_Atakaの日記">
+
+    <link rel="stylesheet" href="/css/primer-syntax.css">
+    <link rel="stylesheet" href="/css/primer-build.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+  </head>
+
+  <body class="bg-gray">
+    <div id="holy" class="container-lg bg-white h-100">
+
+      <div id="header" class="px-1 bg-white">
+        <nav class="UnderlineNav UnderlineNav--right px-2">
+  <a class="UnderlineNav-actions muted-link" href="https://note.gosyujin.com">
+    kk_Atakaの日記
+  </a>
+
+  
+    
+
+    <div class="UnderlineNav-body">
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/about/">
+            
+            <span>About</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/">
+            
+            <span>Archives</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/tags/">
+            
+            <span>Tags</span>
+          </a>
+        
+      
+        
+          <a class="UnderlineNav-item
+            "
+
+          href="/bookmark/">
+            
+            <span>Bookmark</span>
+          </a>
+        
+      
+    </div>
+  
+</nav>
+
+      </div>
+
+      <div role="main" id="main" class="holy-main markdown-body px-4 bg-white">
+        
+  
+  
+    <div>
+      <h1>SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした</h1>
+      <div class="Subhead-description">
+        
+        
+        <div>
+  <ul>
+    <li>
+      Tags:
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/slideshare' class="muted-link">
+      [<span class="Label Label--gray">SlideShare</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/heroku' class="muted-link">
+      [<span class="Label Label--gray">Heroku</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+    </li>
+    <li>
+      初版発行:
+      2012/05/21
+    </li>
+    <li>
+      最終更新:
+      
+        2019/04/15
+        <a href="https://github.com/gosyujin/gosyujin.github.io/commit/c1fe96dc0147a12ff32c768e07ff29c53fe6586c">ジェネレータをhugoに変更</a>
+      
+    </li>
+  </ul>
+</div>
+
+      </div>
+    </div>
+
+    
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#slideshare-heroku-ruby-api-slideshareのapiを叩いてスライドをdlするrubyスクリプトをherokuにデプロイした">[SlideShare][Heroku][Ruby][API]SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした</a></li>
+<li><a href="#あらすじ">あらすじ</a></li>
+<li><a href="#参考サイト">参考サイト</a></li>
+<li><a href="#流れ">流れ</a>
+<ul>
+<li><a href="#api申請">API申請</a></li>
+<li><a href="#パラメータ">パラメータ</a></li>
+</ul></li>
+<li><a href="#ソース">ソース</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+    <article>
+     <section class="pb-6 mb-3 border-bottom">
+        
+
+<h2 id="slideshare-heroku-ruby-api-slideshareのapiを叩いてスライドをdlするrubyスクリプトをherokuにデプロイした">[SlideShare][Heroku][Ruby][API]SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした</h2>
+
+<h2 id="あらすじ">あらすじ</h2>
+
+<p>slideshareを社内から閲覧する事を禁じられているので、ワンクッションおいてスライドのpptを落とせるようにしたい</p>
+
+<h2 id="参考サイト">参考サイト</h2>
+
+<ul>
+<li><a href="http://www.slideshare.net/developers/documentation#get_slideshow:title">http://www.slideshare.net/developers/documentation#get_slideshow:title</a></li>
+</ul>
+
+<p>とりあえず公式サイトを抑えておけばいけそう。</p>
+
+<h2 id="流れ">流れ</h2>
+
+<h3 id="api申請">API申請</h3>
+
+<ul>
+<li>slideshare -&gt; Developer &amp; APIのページからApply for API keyに移動</li>
+<li>ログイン or 新規アカウント作成</li>
+<li>Name、E-Mail、How do you want to use the API?を入力し送信。頑張って英文書く。</li>
+</ul>
+
+<!-- -->
+<div class="highlight"><pre class="chroma">I want to get slideshare&#39;s slide from API.</pre></div>
+<ul>
+<li>送信されたメールに貼られている<span class="deco" style="font-weight:bold;">API Key</span>と<span class="deco" style="font-weight:bold;">Shared Secret</span>を控える</li>
+</ul>
+
+<h3 id="パラメータ">パラメータ</h3>
+
+<ul>
+<li>slideshare -&gt; Documentationを見ながら必要なパラメータを調べる</li>
+</ul>
+
+<p>|*api_key|さっきのAPI Key|</p>
+
+<p>|*ts|タイムスタンプ[1]|</p>
+
+<p>|*hash|さっきのShared Secretとこれから取得するtsでハッシュを作る[2]|</p>
+
+<p>|*(username)|登録ID|</p>
+
+<p>|*(password)|パスワード|</p>
+
+<p>全然関係ないけど、Documentationのページ内にあるi.e.って単語を初めて見たのでググってみた。<a href="http://www.masahiko.info/life/archives/000799.html:title">http://www.masahiko.info/life/archives/000799.html:title</a> that is &hellip; すなわちとかそういう意味らしい。e.g.で例えば、for example的な。</p>
+
+<h2 id="ソース">ソース</h2>
+
+<p>ソースはこんな感じ。</p>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;openssl&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.slideshare.net/api/2/get_slideshow&#39;</span>
+<span class="n">param</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span>
+<span class="n">param</span><span class="o">[</span><span class="s2">&#34;slideshow_url&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;http://www.slideshare.net/gishi/wicket-presentation&#39;</span>
+<span class="n">param</span><span class="o">[</span><span class="s2">&#34;api_key&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;XXXXXXXX&#39;</span>
+<span class="n">param</span><span class="o">[</span><span class="s2">&#34;sharedsecret&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;XXXXXXXX&#39;</span>
+<span class="c1"># ts</span>
+<span class="n">param</span><span class="o">[</span><span class="s2">&#34;ts&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_i</span><span class="o">.</span><span class="n">to_s</span>
+<span class="c1"># hash</span>
+<span class="n">param</span><span class="o">[</span><span class="s2">&#34;hash&#34;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Digest</span><span class="o">::</span><span class="no">SHA1</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">param</span><span class="o">[</span><span class="s2">&#34;sharedsecret&#34;</span><span class="o">]+</span><span class="n">param</span><span class="o">[</span><span class="s2">&#34;ts&#34;</span><span class="o">]</span><span class="p">)</span>
+
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="p">)</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
+<span class="c1">#Net::HTTP.new(uri.host, 80, ENV[&#34;PROXY&#34;], 8080).start do |http|</span>
+  <span class="n">uri_param</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span><span class="o">|</span><span class="n">i</span><span class="o">|</span><span class="n">i</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)}</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">)</span>
+  
+  <span class="n">res</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="s1">&#39;?&#39;</span> <span class="o">+</span> <span class="n">uri_param</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="n">res</span><span class="o">.</span><span class="n">body</span>
+<span class="k">end</span></code></pre></div>
+<p>成功するとこんな感じの内容が返ってくる。</p>
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class="nt">&lt;Slideshow&gt;</span>
+  <span class="nt">&lt;ID&gt;</span>579496<span class="nt">&lt;/ID&gt;</span>
+  <span class="nt">&lt;Title&gt;</span>Wicket<span class="ni">&amp;#20307;&amp;#39443;&amp;#35527;</span><span class="nt">&lt;/Title&gt;</span>
+  <span class="nt">&lt;Description&gt;</span><span class="ni">&amp;#31532;</span>1<span class="ni">&amp;#22238;</span>Wicket<span class="ni">&amp;#21193;&amp;#24375;&amp;#20250;&amp;#12398;&amp;#12521;&amp;#12452;&amp;#12488;&amp;#12491;&amp;#12531;&amp;#12464;&amp;#12488;&amp;#12540;&amp;#12463;&amp;#30330;&amp;#34920;&amp;#36039;&amp;#26009;</span><span class="nt">&lt;/Description&gt;</span>
+  <span class="nt">&lt;Status&gt;</span>2<span class="nt">&lt;/Status&gt;</span>
+  <span class="nt">&lt;Username&gt;</span>gishi<span class="nt">&lt;/Username&gt;</span>
+  <span class="nt">&lt;URL&gt;</span>http://www.slideshare.net/gishi/wicket-presentation<span class="nt">&lt;/URL&gt;</span>
+  <span class="nt">&lt;ThumbnailURL&gt;</span>http://cdn.slidesharecdn.com/wicket-1220375587470160-8-thumbnail<span class="nt">&lt;/ThumbnailURL&gt;</span>
+  <span class="nt">&lt;ThumbnailSmallURL&gt;</span>http://cdn.slidesharecdn.com/wicket-1220375587470160-8-thumbnail-2<span class="nt">&lt;/ThumbnailSmallURL&gt;</span>
+  <span class="nt">&lt;Embed&gt;</span><span class="ni">&amp;lt;</span>div style=<span class="ni">&amp;quot;</span>width:425px<span class="ni">&amp;quot;</span> id=<span class="ni">&amp;quot;</span>__ss_579496<span class="ni">&amp;quot;&amp;gt;&amp;lt;</span>strong style=<span class="ni">&amp;quot;</span>display:block;margin:12px 0 4px<span class="ni">&amp;quot;&amp;gt;&amp;lt;</span>a href=<span class="ni">&amp;quot;</span>http://www.slideshare.net/gishi/wicket-presentation<span class="ni">&amp;quot;</span> title=<span class="ni">&amp;quot;</span>Wicket<span class="ni">&amp;#20307;&amp;#39443;&amp;#35527;&amp;quot;&amp;gt;</span>Wicket<span class="ni">&amp;#20307;&amp;#39443;&amp;#35527;&amp;lt;</span>/a<span class="ni">&amp;gt;&amp;lt;</span>/strong<span class="ni">&amp;gt;&amp;lt;</span>object id=<span class="ni">&amp;quot;</span>__sse579496<span class="ni">&amp;quot;</span> width=<span class="ni">&amp;quot;</span>425<span class="ni">&amp;quot;</span> height=<span class="ni">&amp;quot;</span>355<span class="ni">&amp;quot;&amp;gt;&amp;lt;</span>param name=<span class="ni">&amp;quot;</span>movie<span class="ni">&amp;quot;</span> value=<span class="ni">&amp;quot;</span>http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=wicket-1220375587470160-8<span class="ni">&amp;amp;</span>stripped_title=wicket-presentation<span class="ni">&amp;amp;</span>userName=gishi<span class="ni">&amp;quot;</span> /<span class="ni">&amp;gt;&amp;lt;</span>param name=<span class="ni">&amp;quot;</span>allowFullScreen<span class="ni">&amp;quot;</span> value=<span class="ni">&amp;quot;</span>true<span class="ni">&amp;quot;</span>/<span class="ni">&amp;gt;&amp;lt;</span>param name=<span class="ni">&amp;quot;</span>allowScriptAccess<span class="ni">&amp;quot;</span> value=<span class="ni">&amp;quot;</span>always<span class="ni">&amp;quot;</span>/<span class="ni">&amp;gt;&amp;lt;</span>param name=<span class="ni">&amp;quot;</span>wmode<span class="ni">&amp;quot;</span> value=<span class="ni">&amp;quot;</span>transparent<span class="ni">&amp;quot;</span>/<span class="ni">&amp;gt;&amp;lt;</span>embed name=<span class="ni">&amp;quot;</span>__sse579496<span class="ni">&amp;quot;</span> src=<span class="ni">&amp;quot;</span>http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=wicket-1220375587470160-8<span class="ni">&amp;amp;</span>stripped_title=wicket-presentation<span class="ni">&amp;amp;</span>userName=gishi<span class="ni">&amp;quot;</span> type=<span class="ni">&amp;quot;</span>application/x-shockwave-flash<span class="ni">&amp;quot;</span> allowscriptaccess=<span class="ni">&amp;quot;</span>always<span class="ni">&amp;quot;</span> allowfullscreen=<span class="ni">&amp;quot;</span>true<span class="ni">&amp;quot;</span> wmode=<span class="ni">&amp;quot;</span>transparent<span class="ni">&amp;quot;</span> width=<span class="ni">&amp;quot;</span>425<span class="ni">&amp;quot;</span> height=<span class="ni">&amp;quot;</span>355<span class="ni">&amp;quot;&amp;gt;&amp;lt;</span>/embed<span class="ni">&amp;gt;&amp;lt;</span>/object<span class="ni">&amp;gt;&amp;lt;</span>div style=<span class="ni">&amp;quot;</span>padding:5px 0 12px<span class="ni">&amp;quot;&amp;gt;</span>View more <span class="ni">&amp;lt;</span>a href=<span class="ni">&amp;quot;</span>http://www.slideshare.net/<span class="ni">&amp;quot;&amp;gt;</span>presentations<span class="ni">&amp;lt;</span>/a<span class="ni">&amp;gt;</span> from <span class="ni">&amp;lt;</span>a href=<span class="ni">&amp;quot;</span>http://www.slideshare.net/gishi<span class="ni">&amp;quot;&amp;gt;</span>Hiroto Yamakawa<span class="ni">&amp;lt;</span>/a<span class="ni">&amp;gt;</span>.<span class="ni">&amp;lt;</span>/div<span class="ni">&amp;gt;&amp;lt;</span>/div<span class="ni">&amp;gt;</span><span class="nt">&lt;/Embed&gt;</span>
+  <span class="nt">&lt;Created&gt;</span>Tue Sep 02 10:14:12 -0500 2008<span class="nt">&lt;/Created&gt;</span>
+  <span class="nt">&lt;Updated&gt;</span>Tue Sep 02 10:16:15 -0500 2008<span class="nt">&lt;/Updated&gt;</span>
+  <span class="nt">&lt;Language&gt;</span>ja<span class="nt">&lt;/Language&gt;</span>
+  <span class="nt">&lt;Format&gt;</span>ppt<span class="nt">&lt;/Format&gt;</span>
+  <span class="nt">&lt;Download&gt;</span>1<span class="nt">&lt;/Download&gt;</span>
+  <span class="nt">&lt;DownloadUrl&gt;</span>http://s3.amazonaws.com/ppt-download/wicket-1220375587470160-8.ppt?response-content-disposition=attachment<span class="ni">&amp;amp;</span>Signature=ABs151smgWZ9213%2FyFq81fnMc6A%3D<span class="ni">&amp;amp;</span>Expires=1328606581<span class="ni">&amp;amp;</span>AWSAccessKeyId=AKIAJLJT267DEGKZDHEQ<span class="nt">&lt;/DownloadUrl&gt;</span>
+  <span class="nt">&lt;SlideshowType&gt;</span>0<span class="nt">&lt;/SlideshowType&gt;</span>
+  <span class="nt">&lt;InContest&gt;</span>0<span class="nt">&lt;/InContest&gt;</span>
+<span class="nt">&lt;/Slideshow&gt;</span></code></pre></div>
+<p>おー取れた。んで、xmlの中のDownloadUrlからpptをゲットできた！　これをSinatraでWebアプリケーションにしてHerokuにデプロイすれば職場から行けるかな！？</p>
+
+<p>→いけた！　自分の中ではお役立ち。<a href="http://tycoon-slidedown.heroku.com/:title">http://tycoon-slidedown.heroku.com/:title</a></p>
+
+<p>[1] Set this to the current time in Unix TimeStamp format, to the nearest second(?).</p>
+
+<p>[2] Set this to the SHA1 hash of the concatenation of the shared secret and the timestamp (ts). i.e. SHA1 (sharedsecret + timestamp). The order of the terms in the concatenation is important.</p>
+
+      </section>
+    </article>
+
+    <div class="Subhead-description">
+      
+      <nav class="paginate-container">
+  <div class="pagination">
+      
+        <a href="https://note.gosyujin.com/2012/04/28/1335575351/" class="pagination_overflow previous_page">
+          Prev: 
+          12/4/28
+          BPStudy#57に参加しました #bpstudy
+        </a>
+      
+
+      <a href="https://note.gosyujin.com" class="pagination_center">
+        Archives
+      </a>
+      </span>
+
+      
+        <a href="https://note.gosyujin.com/2012/05/28/1338209339/" class="pagination_overflow next_page">
+          Next: 
+          12/5/28
+          Jenkins,Redmine …
+        </a>
+      
+  </div>
+</nav>
+
+      
+
+
+
+<h2>関連記事(この記事の初版より古い記事はリンクがグレーで表示されます)</h2>
+<ol>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/12/27 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/evernote' class="muted-link">
+      [<span class="Label Label--gray">Evernote</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/12/27/1324911671/">EvernoteのAPIをRubyから叩きたい</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/11/30 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/heroku' class="muted-link">
+      [<span class="Label Label--gray">Heroku</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/11/30/1322662743/">rvm環境でRuby実行時にReadlineエラーが起きた時の対処法</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/11/27 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/heroku' class="muted-link">
+      [<span class="Label Label--gray">Heroku</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/lokka' class="muted-link">
+      [<span class="Label Label--gray">Lokka</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/11/27/1322329546/">LokkaをインストールしてHerokuにデプロイした</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/11/26 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/sinatra' class="muted-link">
+      [<span class="Label Label--gray">Sinatra</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/heroku' class="muted-link">
+      [<span class="Label Label--gray">Heroku</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/11/26/1322240459/">HerokuにWebアプリ(Sinatra)をデプロイする手順をまとめた</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/03/08 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/03/08/1299588433/">RubyではてなのWSSE認証をしてはてブにブクマをポストする</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/03/02 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/03/02/1299062938/">Read it LaterをRubyで取得する</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2011/01/23 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2011/01/23/1295789180/">RubyでTwitterにツイートをキメてみる</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/12/07 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/12/07/1291733295/">RubyでTwitterのタイムラインを取得してみる</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/11/30 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/11/30/1291125511/">RubyでTwitterのOAuth認証をしてみる その2</a>
+    </li>
+  
+    
+      <li class="older-post">
+    
+      <span>2010/11/21 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/twitter' class="muted-link">
+      [<span class="Label Label--gray">Twitter</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/api' class="muted-link">
+      [<span class="Label Label--gray">API</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2010/11/21/1290271210/">RubyでTwitterのOAuth認証をしてみる</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/12/25 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/12/25/ruby-memo/">メモ化を知った</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/11/12 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/jekyll' class="muted-link">
+      [<span class="Label Label--gray">Jekyll</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/11/12/from-hatena-to-jekyll/">はてなダイアリーのエントリをJekyllへ移行する</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/10/10 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/jekyll' class="muted-link">
+      [<span class="Label Label--gray">Jekyll</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/liquid' class="muted-link">
+      [<span class="Label Label--gray">Liquid</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/10/10/jekyll-liquid-plugin/">Jekyll(Liquid)で記事の目次を出力するプラグインを作ってみた</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/10/01 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/bundle' class="muted-link">
+      [<span class="Label Label--gray">Bundle</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/windows' class="muted-link">
+      [<span class="Label Label--gray">Windows</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/10/01/bundle-exec-bat/">bundle execを省略したいのでバッチを作った(Windows版)</a>
+    </li>
+  
+    
+      <li class="newer-post">
+    
+      <span>2012/09/21 </span>
+      
+
+
+  
+    <a href='https://note.gosyujin.com/tags/python' class="muted-link">
+      [<span class="Label Label--gray">Python</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/ruby' class="muted-link">
+      [<span class="Label Label--gray">Ruby</span>]
+    </a>
+  
+    <a href='https://note.gosyujin.com/tags/jekyll' class="muted-link">
+      [<span class="Label Label--gray">Jekyll</span>]
+    </a>
+  
+
+
+
+      <a class="mb-2" href="/2012/09/21/jekyll-pygments/">Pygmentsを使ってJekyll内記事のコードハイライトを実現する</a>
+    </li>
+  
+</ol>
+
+
+    </div>
+
+  
+
+      </div>
+
+      <div id="side" class="bg-white">
+        <div>
+          
+  <div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <h3>Link</h3>
+  <ul>
+    <li>
+      <a href="https://github.com/gosyujin">GitHub</a>
+    </li>
+    <li>
+      <a href="http://www.slideshare.net/kk_Ataka">Slideshare</a>
+    </li>
+    <li>
+      <a href="http://connpass.com/user/kk_Ataka/">Connpass</a>
+    </li>
+ </ul>
+</div>
+
+
+
+
+
+  <div id="recent" class="Box Box-blue p-2 mb-3 mt-5">
+    <a href="https://note.gosyujin.com"><h3>Recent Entry</h3></a>
+    <ul>
+      
+        <li>
+          <span>19/8/29 </span>
+          
+          <a class="mb-2" href="/2019/08/29/eclipse-deployment-assembly/">Eclipseの動的Webプロジェクトから別プロジェクト(自作ライブラリ)を参照する</a>
+        </li>
+      
+        <li>
+          <span>19/7/9 </span>
+          
+          <a class="mb-2" href="/2019/07/09/android-studio-code-format/">Android Studioのコードフォーマットをプロジェクトで統一する</a>
+        </li>
+      
+        <li>
+          <span>19/7/2 </span>
+          
+          <a class="mb-2" href="/2019/07/02/jsp-js-mix/">JSPのスクリプトレットとjavascriptで同じ変数を使ってハマった話</a>
+        </li>
+      
+        <li>
+          <span>19/6/20 </span>
+          
+          <a class="mb-2" href="/2019/06/20/stty-ixon/">Ctrl&#43;Sで画面停止する機能を無効化する</a>
+        </li>
+      
+        <li>
+          <span>19/6/13 </span>
+          
+          <a class="mb-2" href="/2019/06/13/sqlserver-varchar-nvarchar/">SQL Serverでnvarchar(x)のカラムにx文字入らないのはなぜ</a>
+        </li>
+      
+        <li>
+          <span>19/6/3 </span>
+          
+          <a class="mb-2" href="/2019/06/03/sqlserver-show-columns-logical-name/">SQL Serverのカラムに設定されている論理名をまとめて取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/21 </span>
+          
+          <a class="mb-2" href="/2019/05/21/sqlserver-query-parameter/">SQL Serverの動的管理ビューから、実行したSQL(とバインド変数)を取得する</a>
+        </li>
+      
+        <li>
+          <span>19/5/2 </span>
+          
+          <a class="mb-2" href="/2019/05/02/sqlserver-convert-implicit/">SQL Serverで実行したSQLが暗黙の型変換が起こっているかどうかはどうやって調べたらよいのか</a>
+        </li>
+      
+        <li>
+          <span>19/4/23 </span>
+          
+          <a class="mb-2" href="/2019/04/23/database-alter-table/">色々なDBのバージョン確認方法とか論理名のつけ方とか</a>
+        </li>
+      
+        <li>
+          <span>19/4/15 </span>
+          
+          <a class="mb-2" href="/2019/04/15/sqlserver-collation-name/">SQL Serverでの照合順序の確認方法</a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+
+  <div id="tags" class="Box Box--blue p-2 mb-3 mt-5">
+    <a href="/tags/"><h3>Tags</h3></a>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/a5-sql-mk-2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">A5 SQL Mk-2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/api" class="link-gray text-emphasized css-truncate-target">
+          <span class="">API</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/agile" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Agile</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/android" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Android</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ansible" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ansible</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/application" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Application</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/bundle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Bundle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/chef" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Chef</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/db2" class="link-gray text-emphasized css-truncate-target">
+          <span class="">DB2</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/dropbox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Dropbox</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/eclipse" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Eclipse</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/evernote" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Evernote</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/firefox" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Firefox</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/fluentd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Fluentd</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/git" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Git</span>
+        </a>
+        <span class="text-right Counter">16</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/github" class="link-gray text-emphasized css-truncate-target">
+          <span class="">GitHub</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gmail" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gmail</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/golang" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Golang</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/gradle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Gradle</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haml" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haml</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/haskell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Haskell</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/heroku" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Heroku</span>
+        </a>
+        <span class="text-right Counter">5</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/homebrew" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Homebrew</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hubot" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hubot</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/hugo" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Hugo</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ie" class="link-gray text-emphasized css-truncate-target">
+          <span class="">IE</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jsp" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JSP</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Java</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/javascript" class="link-gray text-emphasized css-truncate-target">
+          <span class="">JavaScript</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jekyll" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jekyll</span>
+        </a>
+        <span class="text-right Counter">20</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/jenkins" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Jenkins</span>
+        </a>
+        <span class="text-right Counter">7</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/liquid" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Liquid</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/lokka" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Lokka</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mac" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Mac</span>
+        </a>
+        <span class="text-right Counter">8</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/markdown" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Markdown</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/mysql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">MySql</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oauth" class="link-gray text-emphasized css-truncate-target">
+          <span class="">OAuth</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/oracle" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Oracle</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/postgresql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">PostgreSQL</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/python" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Python</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rspec" class="link-gray text-emphasized css-truncate-target">
+          <span class="">RSpec</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rails" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Rails</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/redmine" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Redmine</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ruby" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Ruby</span>
+        </a>
+        <span class="text-right Counter">75</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sql-server" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQL Server</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sqlite3" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SQLite3</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/scala" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Scala</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/selenium" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Selenium</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/shell" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Shell</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sinatra" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sinatra</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/slideshare" class="link-gray text-emphasized css-truncate-target">
+          <span class="">SlideShare</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/solaris" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Solaris</span>
+        </a>
+        <span class="text-right Counter">12</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/sphinx" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Sphinx</span>
+        </a>
+        <span class="text-right Counter">18</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/startup" class="link-gray text-emphasized css-truncate-target">
+          <span class="">StartUp</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/subversion" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Subversion</span>
+        </a>
+        <span class="text-right Counter">9</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/tdd" class="link-gray text-emphasized css-truncate-target">
+          <span class="">TDD</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/test" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Test</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/translate" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Translate</span>
+        </a>
+        <span class="text-right Counter">2</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/twitter" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Twitter</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/unix" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Unix</span>
+        </a>
+        <span class="text-right Counter">14</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vb" class="link-gray text-emphasized css-truncate-target">
+          <span class="">VB</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/vim" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Vim</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wicket" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wicket</span>
+        </a>
+        <span class="text-right Counter">6</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/wiki" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Wiki</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/windows" class="link-gray text-emphasized css-truncate-target">
+          <span class="">Windows</span>
+        </a>
+        <span class="text-right Counter">25</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/ios" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iOS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/iphone" class="link-gray text-emphasized css-truncate-target">
+          <span class="">iPhone</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/java-ja" class="link-gray text-emphasized css-truncate-target">
+          <span class="">java-ja</span>
+        </a>
+        <span class="text-right Counter">4</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/node.js" class="link-gray text-emphasized css-truncate-target">
+          <span class="">node.js</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/rest" class="link-gray text-emphasized css-truncate-target">
+          <span class="">reST</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/xquery" class="link-gray text-emphasized css-truncate-target">
+          <span class="">xQuery</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%81%95%e3%81%8f%e3%82%89vps" class="link-gray text-emphasized css-truncate-target">
+          <span class="">さくらVPS</span>
+        </a>
+        <span class="text-right Counter">3</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%82%a4%e3%83%99%e3%83%b3%e3%83%88" class="link-gray text-emphasized css-truncate-target">
+          <span class="">イベント</span>
+        </a>
+        <span class="text-right Counter">27</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e3%83%8d%e3%82%bf" class="link-gray text-emphasized css-truncate-target">
+          <span class="">ネタ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%96%87%e5%ad%97%e3%82%b3%e3%83%bc%e3%83%89" class="link-gray text-emphasized css-truncate-target">
+          <span class="">文字コード</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e6%97%a5%e8%a8%98" class="link-gray text-emphasized css-truncate-target">
+          <span class="">日記</span>
+        </a>
+        <span class="text-right Counter">11</span>
+      </span>
+    
+      <span class="css-truncate no-wrap m-1 pl-1">
+        <a href="/tags/%e8%aa%bf%e6%9f%bb%e3%83%ad%e3%82%b0" class="link-gray text-emphasized css-truncate-target">
+          <span class="">調査ログ</span>
+        </a>
+        <span class="text-right Counter">1</span>
+      </span>
+    
+  </div>
+
+
+<div id="profile" class="Box Box-blue p-2 mb-3 mt-5">
+  <a href="https://pixe.la/" target="_blank"><h3>PageView@Pixela</h3></a>
+  <div id="svg-load-area"></div>
+</div>
+
+
+
+        </div>
+        <aside>
+          
+  
+  
+  <div id="toc" class="Box Box--blue p-2 mb-3 mt-5">
+    <h3>目次</h3>
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#slideshare-heroku-ruby-api-slideshareのapiを叩いてスライドをdlするrubyスクリプトをherokuにデプロイした">[SlideShare][Heroku][Ruby][API]SlideShareのAPIを叩いてスライドをDLするRubyスクリプトをHerokuにデプロイした</a></li>
+<li><a href="#あらすじ">あらすじ</a></li>
+<li><a href="#参考サイト">参考サイト</a></li>
+<li><a href="#流れ">流れ</a>
+<ul>
+<li><a href="#api申請">API申請</a></li>
+<li><a href="#パラメータ">パラメータ</a></li>
+</ul></li>
+<li><a href="#ソース">ソース</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+
+
+
+
+
+        </aside>
+      </div>
+
+      <div id="footer" class="pt-2 pb-3 bg-white text-center">
+        <span class="text-small text-gray">
+  Powered by
+  <a href="https://gohugo.io" class="link-gray-dark">Hugo</a>
+  
+  
+  0.40.1 2018-04-25T17:16:11Z theme based on
+  <a href="https://github.com/qqhann/hugo-primer" class="link-gray-dark">Hugo-Primer</a>
+  &#x00A9; 2009-2019 <a href="https://gosyujin.com" class="link-gray-dark">kk_Ataka</a>
+</span>
+
+      </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+        $('#svg-load-area').load('https://pixe.la/v1/users/gosyujin/graphs/page-view?mode=short', function(){
+           tippy('.each-day', {
+             arrow: true
+           });
+        });
+      });
+    </script>
+
+    
+    
+    
+    
+  </body>
+</html>
