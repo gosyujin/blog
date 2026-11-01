@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Jekyll on kk_Atakaの日記</title>
-    <link>https://note.gosyujin.com/tags/jekyll/</link>
+    <link>https://gosyujin.com/blog/tags/jekyll/</link>
     <description>Recent content in Jekyll on kk_Atakaの日記</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>jp</language>
     <lastBuildDate>Thu, 06 Aug 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://note.gosyujin.com/tags/jekyll/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://gosyujin.com/blog/tags/jekyll/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Jekyllで出力するタグをソートする 解決編</title>
-      <link>https://note.gosyujin.com/2015/08/06/jekyll-tag-sort/</link>
+      <link>https://gosyujin.com/blog/2015/08/06/jekyll-tag-sort/</link>
       <pubDate>Thu, 06 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2015/08/06/jekyll-tag-sort/</guid>
+      <guid>https://gosyujin.com/blog/2015/08/06/jekyll-tag-sort/</guid>
       <description>あらすじ 1年半前の記事Jekyllプロジェクトへpull requestを行う手順(したとは言っていない) - kk_Atakaの日記でこんな事をやりたがってた。
  Jekyll でかき集められた tags (タグのリスト) がバラバラのため、 tags.html ページから探すのがつらいのでソートをしたい。
  で、こうした。
@@ -30,10 +30,10 @@
     
     <item>
       <title>Jekyllがデフォルトでは外部から繋がらなくなってたよ</title>
-      <link>https://note.gosyujin.com/2015/03/14/jekyll-changed-bindaddress/</link>
+      <link>https://gosyujin.com/blog/2015/03/14/jekyll-changed-bindaddress/</link>
       <pubDate>Sat, 14 Mar 2015 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2015/03/14/jekyll-changed-bindaddress/</guid>
+      <guid>https://gosyujin.com/blog/2015/03/14/jekyll-changed-bindaddress/</guid>
       <description>あらすじ しばらく触っていなかったJekyllをアップデートしたときに他のPCからアクセスできなくてちょっとハマった。
 Ruby - Sinatraがデフォルトでは外部から繋がらなくなってたよ - Qiita (タイトルはリスペクト)
 解決策(暫定) _config.ymlにhost: 0.0.0.0を定義するか、起動時に--host 0.0.0.0オプションを指定すればいいんだけどそれがもっともよいんだろうか。
@@ -43,10 +43,10 @@ Ruby - Sinatraがデフォルトでは外部から繋がらなくなってたよ
     
     <item>
       <title>kawasaki.rb #018 でJekyllドキュメント翻訳のLTをしてきた</title>
-      <link>https://note.gosyujin.com/2014/11/30/kawsakirb-018/</link>
+      <link>https://gosyujin.com/blog/2014/11/30/kawsakirb-018/</link>
       <pubDate>Sun, 30 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2014/11/30/kawsakirb-018/</guid>
+      <guid>https://gosyujin.com/blog/2014/11/30/kawsakirb-018/</guid>
       <description>あらすじ kawasaki.rb #018 でTokyuRuby会議08のLTの素振りをしたんだけど、都合によりTokyu本番で発表できなかったため、素振りが最終形になってしまった。
 発表内容   Jekyllドキュメント翻訳活動振り返り  from kk_Ataka 
 本家の更新についていくのがめんどくさいよねという事で、そこをどうするかについてまとめました。
@@ -55,10 +55,10 @@ Ruby - Sinatraがデフォルトでは外部から繋がらなくなってたよ
     
     <item>
       <title>jekyllrb-ja キックオフを実施しました</title>
-      <link>https://note.gosyujin.com/2014/07/26/jekyllrb-ja-meetupmd/</link>
+      <link>https://gosyujin.com/blog/2014/07/26/jekyllrb-ja-meetupmd/</link>
       <pubDate>Sat, 26 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2014/07/26/jekyllrb-ja-meetupmd/</guid>
+      <guid>https://gosyujin.com/blog/2014/07/26/jekyllrb-ja-meetupmd/</guid>
       <description>あらすじ Jekyllドキュメントの初版翻訳が終わりまして。
 初版はえいや！でやれば進むもので、大変なのはそれを継続させていく事。
 今後の進め方とかどこかで一回詰めたいな〜と思っていたら@yandodさんに集まる場所を提供していただきました！(がJekyllなのだ)
@@ -70,10 +70,10 @@ Engine Yardさんありがとうございます！
     
     <item>
       <title>Jekyllドキュメントを翻訳してなんとなくわかってきたもの</title>
-      <link>https://note.gosyujin.com/2014/06/22/translated-jekyllrb/</link>
+      <link>https://gosyujin.com/blog/2014/06/22/translated-jekyllrb/</link>
       <pubDate>Sun, 22 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2014/06/22/translated-jekyllrb/</guid>
+      <guid>https://gosyujin.com/blog/2014/06/22/translated-jekyllrb/</guid>
       <description>あらすじ Jekyllドキュメントの翻訳リポジトリを作成して約3ヶ月くらいたちまして。
  Jekyllドキュメントの日本語翻訳リポジトリ「jekyllrb.com.jp」を作成しました - kk_Atakaの日記 kawasaki.rb #010 で発表してきました #kwskrb - kk_Atakaの日記  現状報告と、今までの知見のまとめを。
 とりあえず自分の中でたまっているものを整理したいのでとりとめもなく書き出していくメソッド。
@@ -86,10 +86,10 @@ Engine Yardさんありがとうございます！
     
     <item>
       <title>kawasaki.rb #010 で発表してきました #kwskrb</title>
-      <link>https://note.gosyujin.com/2014/04/01/kawasakirb-010/</link>
+      <link>https://gosyujin.com/blog/2014/04/01/kawasakirb-010/</link>
       <pubDate>Tue, 01 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2014/04/01/kawasakirb-010/</guid>
+      <guid>https://gosyujin.com/blog/2014/04/01/kawasakirb-010/</guid>
       <description>あらすじ 詳細は主催者の @chezou さんのまとめから。
  Kawasaki.rb #010 - Kawasaki.rb ｜ Doorkeeper kawawaki.rb #010 を開催しました #kwskrb ｜ once upon a time,  kawasaka.rb というコミュニティを知り、参加。
 はじめて LT した！
@@ -101,10 +101,10 @@ Engine Yardさんありがとうございます！
     
     <item>
       <title>Jekyllドキュメントの日本語翻訳リポジトリ「jekyllrb.com.jp」を作成しました</title>
-      <link>https://note.gosyujin.com/2014/03/13/jekyll-make-jekyllrb-com-jp/</link>
+      <link>https://gosyujin.com/blog/2014/03/13/jekyll-make-jekyllrb-com-jp/</link>
       <pubDate>Thu, 13 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2014/03/13/jekyll-make-jekyllrb-com-jp/</guid>
+      <guid>https://gosyujin.com/blog/2014/03/13/jekyll-make-jekyllrb-com-jp/</guid>
       <description>あらすじ Jekyll プロジェクトに対していろいろやった。
  Jekyll プロジェクトのリポジトリルートにある README.markdown と CONTRIBUTING.markdown を日本語訳してプルリクした！ 人生初のプルリクエストをささげ、マージしてもらえた。やった！ いきなりカットインしてきた PR に対してすごく親身に対応してもらえた あわせて Jekyllドキュメントの日本語翻訳リポジトリ を作成した！ 手伝ってくれる人募集中です！お願いします！ 推敲、翻訳してくれる人の募集(切実) · Issue #14 · gosyujin/jekyllrb.com.jp  所感 今回のやり取りを通じて、ドキュメントに対して以下のような観点で考える力が足りないと感じた。
 まだ明確な答えは出ていないので、これからドキュメントを育てつつ答えを探していきたい。
@@ -115,10 +115,10 @@ Engine Yardさんありがとうございます！
     
     <item>
       <title>Jekyllプロジェクトへpull requestを行う手順(したとは言っていない)</title>
-      <link>https://note.gosyujin.com/2014/01/28/pull-request-to-jekyll/</link>
+      <link>https://gosyujin.com/blog/2014/01/28/pull-request-to-jekyll/</link>
       <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2014/01/28/pull-request-to-jekyll/</guid>
+      <guid>https://gosyujin.com/blog/2014/01/28/pull-request-to-jekyll/</guid>
       <description>あらすじ  Jekyll に一点気になるところがあったのでなおしかたを調べた せっかくなのでプルリクエストしてみたい！ …が、知らないこと多すぎて頓挫 とりあえず、今わかったところまでまとめた ← 今ここ  なおした内容 Jekyll でかき集められた tags (タグのリスト) がバラバラのため、 tags.html ページから探すのがつらいのでソートをしたい。
 修正内容 Jekyll のソースを追っていった結果、 jekyll/lib/jekyll/site.rb 内の一行をいじるだけでいけた。
 def post_attr_hash(post_attr) # Build a hash map based on the specified post attribute ( post attr =&amp;gt; # array of posts ) then sort each array in reverse order. hash = Hash.new { |hsh, key| hsh[key] = Array.new } self.posts.each { |p| p.send(post_attr.to_sym).each { |t| hash[t] &amp;lt;&amp;lt; p } } hash.</description>
@@ -126,10 +126,10 @@ def post_attr_hash(post_attr) # Build a hash map based on the specified post att
     
     <item>
       <title>Jekyllのプラグイン作成で複数ファイルにまたがったタグをどう扱えばいいのかわからない話</title>
-      <link>https://note.gosyujin.com/2013/11/25/jekyll-plugin-reference/</link>
+      <link>https://gosyujin.com/blog/2013/11/25/jekyll-plugin-reference/</link>
       <pubDate>Mon, 25 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/11/25/jekyll-plugin-reference/</guid>
+      <guid>https://gosyujin.com/blog/2013/11/25/jekyll-plugin-reference/</guid>
       <description>あらすじ Jekyll ではてなダイアリーのような脚注をつけられるプラグインを作った。
  gosyujin.github.com/_plugins/gosyujin.github.com/reference.rb  文中に登場した ref タグの引数を集めて ref_anchor タグが打たれた箇所にリスト出力する、というもの。
 こう書くと、
@@ -143,20 +143,20 @@ def post_attr_hash(post_attr) # Build a hash map based on the specified post att
     
     <item>
       <title>Jekyllバージョンアップの際に思いのほか手こずった話 てっく煮さん製プラグインの更新に追従したい編</title>
-      <link>https://note.gosyujin.com/2013/09/07/jekyll-maintenance-2/</link>
+      <link>https://gosyujin.com/blog/2013/09/07/jekyll-maintenance-2/</link>
       <pubDate>Sat, 07 Sep 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/09/07/jekyll-maintenance-2/</guid>
+      <guid>https://gosyujin.com/blog/2013/09/07/jekyll-maintenance-2/</guid>
       <description>前回までのあらすじ  Jekyllバージョンアップの際に思いのほか手こずった話 Jekyll Bootstrapの更新に追従したい編  結論 fork していれば、だいたいなんとかなる。
 環境  Ruby 1.9.3  RedCloth (4.2.9) bundler (1.3.5) classifier (1.3.3) colorator (0.1) commander (4.1.4) directory_watcher (1.4.1) fast-stemmer (1.0.2) highline (1.6.19) hparser (0.4.0 dc35f05) jekyll (1.0.0 9f94eaf) kramdown (0.14.2) liquid (2.5.1) maruku (0.6.1) posix-spawn (0.3.6) pygments.rb (0.4.2) rake (10.1.0) rdiscount (2.1.6) redcarpet (2.2.2) safe_yaml (0.7.1) syntax (1.0.0) yajl-ruby (1.1.0)   参考サイト  Git で複数のリポジトリをまとめたり、逆に切り出したりする - Qiita [キータ]  やりたい事: てっく煮プラグイン編 @nitoyon さんが公開しているリポジトリ( https://github.</description>
     </item>
     
     <item>
       <title>Jekyllバージョンアップの際に思いのほか手こずった話 Jekyll Bootstrapの更新に追従したい編</title>
-      <link>https://note.gosyujin.com/2013/08/07/jekyll-maintenance-1/</link>
+      <link>https://gosyujin.com/blog/2013/08/07/jekyll-maintenance-1/</link>
       <pubDate>Wed, 07 Aug 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/08/07/jekyll-maintenance-1/</guid>
+      <guid>https://gosyujin.com/blog/2013/08/07/jekyll-maintenance-1/</guid>
       <description>あらすじ forkとか、fetchとか、本で読んでるだけじゃ実際やりたい時にどうやりゃいいかわからん…という話。
 Github Pagesで運用しているJekyllのバージョンアップをする時に死んだ
  原因は、他の人が公開しているプラグインやcssをほいほい コピペ していたため  公開先ではもちろんJekyllの更新に追従しており、更新を怠った己が自爆しているだけ)  なんとか自分のリポジトリでも追従したい。でもコピペはやだ  追従したいのは、主に Jekyll Bootstrap ファイル全般と @nitoyon さんのてっく煮ブログで使われているプラグイン。(特にはてな系)
@@ -166,10 +166,10 @@ Github Pagesで運用しているJekyllのバージョンアップをする時�
     
     <item>
       <title>Jekyll@GitHub Pagesの運用形態を変えたのでAnalyticsの設定が効かなくなっていた</title>
-      <link>https://note.gosyujin.com/2013/05/27/jekyll-githubpages-analytics-setting/</link>
+      <link>https://gosyujin.com/blog/2013/05/27/jekyll-githubpages-analytics-setting/</link>
       <pubDate>Mon, 27 May 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/05/27/jekyll-githubpages-analytics-setting/</guid>
+      <guid>https://gosyujin.com/blog/2013/05/27/jekyll-githubpages-analytics-setting/</guid>
       <description>あらすじ Jekyllで指定していたGoogle Analyticsの設定が効かなくなっていた。
 他のGitHub Pages@Jekyllでは正しくGoogle Analyticsが動いているのに…。
 結論  前回 GitHub Pages の運用形態を変えていた &amp;hellip; GitHub PagesでJekyllプラグインを使えるようにするには…  変更前: master ブランチにコンテンツを配備し、GitHubにデプロイしてもらう 変更後: source ブランチを作成しコンテンツを移動。ローカルでビルドした静的ファイルを master ブランチにpush  それによる オプション指定の凡ミス  おぉ…。
@@ -179,10 +179,10 @@ Github Pagesで運用しているJekyllのバージョンアップをする時�
     
     <item>
       <title>記事の目次を出力するJekyllプラグインの改良</title>
-      <link>https://note.gosyujin.com/2013/05/23/jekyll-liquid-plugin2/</link>
+      <link>https://gosyujin.com/blog/2013/05/23/jekyll-liquid-plugin2/</link>
       <pubDate>Thu, 23 May 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/05/23/jekyll-liquid-plugin2/</guid>
+      <guid>https://gosyujin.com/blog/2013/05/23/jekyll-liquid-plugin2/</guid>
       <description>前回までのあらすじ Jekyll(Liquid)で記事の目次を出力するプラグインを作ってみた
 これの続き。昔の話すぎて、忘れないようにメモ。
 前回の疑問  …あれ？　別の環境でやったら hタグに section , section-1 , section-2 … って連番が振られてる！？　なんで！
@@ -196,10 +196,10 @@ Github Pagesで運用しているJekyllのバージョンアップをする時�
     
     <item>
       <title>GitHub PagesでJekyllプラグインを使えるようにするには…</title>
-      <link>https://note.gosyujin.com/2013/05/21/jekyll-plugin-githubpages/</link>
+      <link>https://gosyujin.com/blog/2013/05/21/jekyll-plugin-githubpages/</link>
       <pubDate>Tue, 21 May 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/05/21/jekyll-plugin-githubpages/</guid>
+      <guid>https://gosyujin.com/blog/2013/05/21/jekyll-plugin-githubpages/</guid>
       <description>あらすじ Jekyll＠GitHub Pagesの場合、Liquidで(自分で)作ったプラグインは使えないという事が判明した。(ローカルで起動した場合/safeモードじゃない場合は関係ない)
  俺の最強ブログシステムも火を噴いてたぜ - Webtech Walker  これを回避するには
  GitHub Pages をやめる(レンタルサーバを借りてデプロイ) GitHub Pages に 静的ファイル としてhtml自体をデプロイ  する方法がありそう。今回はGitHub Pagesを使い続けたいので後者で頑張ってみる。
@@ -212,10 +212,10 @@ Github Pagesで運用しているJekyllのバージョンアップをする時�
     
     <item>
       <title>Jekyllのバージョンを 0.12.0 にあげた</title>
-      <link>https://note.gosyujin.com/2013/04/11/jekyll-0120/</link>
+      <link>https://gosyujin.com/blog/2013/04/11/jekyll-0120/</link>
       <pubDate>Thu, 11 Apr 2013 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2013/04/11/jekyll-0120/</guid>
+      <guid>https://gosyujin.com/blog/2013/04/11/jekyll-0120/</guid>
       <description>あらすじ ぼちぼちJekyllのバージョンを上げてみる。
 参考サイト  Jekyll の 0.12.0 でシンタックス ハイライトが便利になった - てっく煮ブログ  手順 Gemfile をちょっと修正。redcarpetを追加する、のとpygmentsのバージョンをアップ。
 gem &amp;#39;rake&amp;#39; gem &amp;#39;jekyll&amp;#39;, :git =&amp;gt; &amp;#39;git://github.com/mojombo/jekyll.git&amp;#39; gem &amp;#39;RedCloth&amp;#39; -gem &amp;#39;rdiscount&amp;#39; +gem &amp;#39;redcarpet&amp;#39; +#gem &amp;#39;rdiscount&amp;#39; gem &amp;#39;hparser&amp;#39;, :git =&amp;gt; &amp;#39;git://github.com/hotchpotch/hparser.git&amp;#39; -gem &amp;#39;pygments.rb&amp;#39;, &amp;#39;=0.2.12&amp;#39; +gem &amp;#39;pygments.rb&amp;#39;, &amp;#39;=0.3.2&amp;#39; そして bundle install 。
@@ -226,10 +226,10 @@ $ jekyll --help bundle exec jekyll --help Jekyll is a blog-aware, static site ge
     
     <item>
       <title>はてなダイアリーのエントリをJekyllへ移行する</title>
-      <link>https://note.gosyujin.com/2012/11/12/from-hatena-to-jekyll/</link>
+      <link>https://gosyujin.com/blog/2012/11/12/from-hatena-to-jekyll/</link>
       <pubDate>Mon, 12 Nov 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2012/11/12/from-hatena-to-jekyll/</guid>
+      <guid>https://gosyujin.com/blog/2012/11/12/from-hatena-to-jekyll/</guid>
       <description>あらすじ はてなダイアリーからJekylに移行したいんだけど、完全に移行し切るには過去の遺産(はてなダイアリーのエントリ)も移したいよ。
 はてなのエントリ取得 何はなくともエントリをエクスポートしてこない事には始まらない。管理画面から データ管理 =&amp;gt; インポート/エクスポート =&amp;gt; はてなの日記データ形式 をDL。
 はてな =&amp;gt; Jekyll どうやるか はてなのエントリをJekyllで見るためには、恐らく2通りの方法がある。
@@ -246,10 +246,10 @@ $ git clone git://github.com/mojombo/jekyll.git # fa8400ab61cb8df176f9fb2ec52d85
     
     <item>
       <title>Jekyll(Liquid)で記事の目次を出力するプラグインを作ってみた</title>
-      <link>https://note.gosyujin.com/2012/10/10/jekyll-liquid-plugin/</link>
+      <link>https://gosyujin.com/blog/2012/10/10/jekyll-liquid-plugin/</link>
       <pubDate>Wed, 10 Oct 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2012/10/10/jekyll-liquid-plugin/</guid>
+      <guid>https://gosyujin.com/blog/2012/10/10/jekyll-liquid-plugin/</guid>
       <description>あらすじ Jekyllのプラグイン作成の練習。エントリから見出しを抽出して目次を出力してみたい。
 参考サイト  最近作った Jekyll (Liquid) のプラグイン - @yuumi3のお仕事日記  ソース  gosyujin.github.com/_plugins/tree_list.rb at master · gosyujin/gosyujin.github.com · GitHub  まだできてない事  記事中に h1 (#) タグがあるとうまく生成されない  記事タイトルが h1 (#) なので、 h2 (##) 以下の見出しを集めてくるようにしている  目次から記事へのリンク  Markdownでは ## &amp;lt;a name=&amp;quot;section&amp;quot;&amp;gt; hoge と記載すればnameを振ってくれるようだけど、めんどいので自動で振ってほしい むしろ今はaタグを入れているとレイアウトが崩れる …あれ？　別の環境でやったら hタグに section , section-1 , section-2 &amp;hellip; って連番が振られてる！？　なんで！   作り方 最小単位はこうなるみたい。(何もしないプラグイン)
 module Jekyll class SampleTag &amp;lt; Liquid::Tag def initialize(tag_name, xxx, tokens) super end def render(context) end end end Liquid::Template.</description>
@@ -257,10 +257,10 @@ module Jekyll class SampleTag &amp;lt; Liquid::Tag def initialize(tag_name, xxx,
     
     <item>
       <title>Pygmentsを使ってJekyll内記事のコードハイライトを実現する</title>
-      <link>https://note.gosyujin.com/2012/09/21/jekyll-pygments/</link>
+      <link>https://gosyujin.com/blog/2012/09/21/jekyll-pygments/</link>
       <pubDate>Fri, 21 Sep 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2012/09/21/jekyll-pygments/</guid>
+      <guid>https://gosyujin.com/blog/2012/09/21/jekyll-pygments/</guid>
       <description>あらすじ Jekyllではデフォルトでコードにハイライトをつける事はできないようなので、Pygmentsという拡張を入れる。
 環境  Python 2.7.3 (2.6以上が必要)  easy_install   easy_installはhttp://peak.telecommunity.com/dist/ez_setup.pyからDLし $ (sudo) python ez_setup.py でインストールする。
 ※ 後に以下のようなエラーが出るかもしれない。
@@ -272,10 +272,10 @@ $ python &amp;gt; python: error while loading shared libraries: libpython2.7.so.
     
     <item>
       <title>JekyllをGitHub Pagesに上げるための準備</title>
-      <link>https://note.gosyujin.com/2012/09/20/jekyll/</link>
+      <link>https://gosyujin.com/blog/2012/09/20/jekyll/</link>
       <pubDate>Thu, 20 Sep 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2012/09/20/jekyll/</guid>
+      <guid>https://gosyujin.com/blog/2012/09/20/jekyll/</guid>
       <description>GitHub Pagesに登録 GitHubより New Repository を選択。
 Repository Name を GitHubのID.github.com と入力しリポジトリ作成。
 前回の記事で作成していたJekyll Bootstrapのプッシュ先を追加し、プッシュ。
@@ -296,10 +296,10 @@ comments:provider:disqusdisqus:short_name:kkataka(略) これでいけるはず�
     
     <item>
       <title>JekyllとJekyll Bootstrapでかんたん静的サイト生成…するための準備</title>
-      <link>https://note.gosyujin.com/2012/09/14/1347595853/</link>
+      <link>https://gosyujin.com/blog/2012/09/14/1347595853/</link>
       <pubDate>Fri, 14 Sep 2012 00:00:00 +0000</pubDate>
       
-      <guid>https://note.gosyujin.com/2012/09/14/1347595853/</guid>
+      <guid>https://gosyujin.com/blog/2012/09/14/1347595853/</guid>
       <description>[Ruby][StartUp][Jekyll]JekyllとJekyll Bootstrapでかんたん静的サイト生成…するための準備 あらすじ  はてな記法、綺麗に出力できて今までお気に入りだったんだけど、欠点として、はてなでしか使わないという問題が 他にも文章書く時にreSTとかMarkdownを使うと捗るが、結局アウトプットするのは個人でははてなが多い……[1] そもそもはてな記法は基本はてなじゃなきゃ見れない なら最初から…？  うーん。他の記法使う時がきたのか。
 Jekyllとは  Jekyll is a simple, blog aware, static site generator.
 https://github.com/mojombo/jekyll/wiki
